@@ -20,8 +20,7 @@
             </div>
             <div class="nav-menu">
                 <a href="#home" class="nav-link active">Home</a>
-                <a href="#planner" class="nav-link">Planner</a>
-                <a href="#saved" class="nav-link">Saved Trips</a>
+                <a href="#dashboard" class="nav-link">My Trips</a>
                 <a href="#about" class="nav-link">About</a>
             </div>
             <div class="nav-toggle">
@@ -39,228 +38,246 @@
         </div>
         <div class="hero-content">
             <h1 class="hero-title">Plan Your Perfect Journey</h1>
-            <p class="hero-subtitle">AI-powered travel itinerary planner that creates personalized trips tailored to your preferences, budget, and schedule.</p>
-            <button class="cta-button" onclick="scrollToPlanner()">
-                <span>Start Planning</span>
-                <i class="fas fa-arrow-right"></i>
+            <p class="hero-subtitle">AI-powered travel wizard that creates personalized itineraries in under 60 seconds. Just answer a few questions and let Gemini AI do the rest.</p>
+            <button class="cta-button" onclick="startWizard()">
+                <span>Start AI Wizard</span>
+                <i class="fas fa-magic"></i>
             </button>
+            <div class="hero-actions">
+                <button class="secondary-button" onclick="showDashboard()">
+                    <span>View My Trips</span>
+                    <i class="fas fa-suitcase"></i>
+                </button>
+            </div>
         </div>
         <div class="hero-features">
             <div class="feature-card">
                 <i class="fas fa-robot"></i>
                 <h3>AI-Powered</h3>
-                <p>Smart recommendations based on your preferences</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-map-marked-alt"></i>
-                <h3>Personalized</h3>
-                <p>Custom itineraries for every type of traveler</p>
+                <p>Gemini AI creates personalized itineraries based on your preferences</p>
             </div>
             <div class="feature-card">
                 <i class="fas fa-clock"></i>
-                <h3>Time-Saving</h3>
-                <p>Generate complete itineraries in seconds</p>
+                <h3>60-Second Setup</h3>
+                <p>Complete wizard in under a minute, even on 3G</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-edit"></i>
+                <h3>Fully Editable</h3>
+                <p>Drag, drop, and customize your AI-generated itinerary</p>
             </div>
         </div>
     </section>
 
-    <!-- Planner Section -->
-    <section id="planner" class="planner">
+    <!-- Wizard Section -->
+    <section id="wizard" class="wizard-section hidden">
         <div class="container">
-            <div class="section-header">
-                <h2>Create Your Itinerary</h2>
-                <p>Tell us about your dream trip and let AI do the planning</p>
-            </div>
-            
-            <div class="planner-form">
-                <form id="itineraryForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="destination">
-                                <i class="fas fa-map-marker-alt"></i>
-                                Destination
-                            </label>
-                            <input type="text" id="destination" name="destination" placeholder="Where do you want to go?" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="duration">
-                                <i class="fas fa-calendar-alt"></i>
-                                Duration
-                            </label>
-                            <select id="duration" name="duration" required>
-                                <option value="">Select duration</option>
-                                <option value="1">1 Day</option>
-                                <option value="2">2 Days</option>
-                                <option value="3">3 Days</option>
-                                <option value="4">4 Days</option>
-                                <option value="5">5 Days</option>
-                                <option value="7">1 Week</option>
-                                <option value="10">10 Days</option>
-                                <option value="14">2 Weeks</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="budget">
-                                <i class="fas fa-dollar-sign"></i>
-                                Budget Range
-                            </label>
-                            <select id="budget" name="budget" required>
-                                <option value="">Select budget</option>
-                                <option value="budget">Budget ($0-$50/day)</option>
-                                <option value="mid-range">Mid-range ($50-$150/day)</option>
-                                <option value="luxury">Luxury ($150+/day)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="travelers">
-                                <i class="fas fa-users"></i>
-                                Travelers
-                            </label>
-                            <select id="travelers" name="travelers" required>
-                                <option value="">Number of travelers</option>
-                                <option value="1">Solo traveler</option>
-                                <option value="2">Couple</option>
-                                <option value="3-4">Small group (3-4)</option>
-                                <option value="5+">Large group (5+)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="interests">
-                            <i class="fas fa-heart"></i>
-                            Interests & Preferences
-                        </label>
-                        <div class="interests-grid">
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="culture">
-                                <span>Culture & History</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="food">
-                                <span>Food & Dining</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="adventure">
-                                <span>Adventure</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="nature">
-                                <span>Nature</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="nightlife">
-                                <span>Nightlife</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="shopping">
-                                <span>Shopping</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="relaxation">
-                                <span>Relaxation</span>
-                            </label>
-                            <label class="interest-tag">
-                                <input type="checkbox" name="interests" value="photography">
-                                <span>Photography</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="additional">
-                            <i class="fas fa-comment"></i>
-                            Additional Requirements
-                        </label>
-                        <textarea id="additional" name="additional" placeholder="Any specific requirements, accessibility needs, or special requests?"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="generate-button">
-                        <span>Generate Itinerary</span>
-                        <i class="fas fa-magic"></i>
+            <div class="wizard-container">
+                <div class="wizard-header">
+                    <h2>AI Travel Wizard</h2>
+                    <p>Let's create your perfect trip in 7 simple steps</p>
+                    <button class="skip-wizard" onclick="skipWizard()">
+                        Skip wizard / Plan manually
                     </button>
-                </form>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-dots" id="progressDots">
+                        <!-- Dots will be generated by JS -->
+                    </div>
+                    <div class="progress-text">
+                        <span id="currentStep">1</span> of <span id="totalSteps">7</span>
+                    </div>
+                </div>
+
+                <!-- Wizard Steps -->
+                <div class="wizard-content">
+                    <div class="wizard-step active" data-step="1">
+                        <div class="step-content">
+                            <h3>Where would you like to go?</h3>
+                            <p>Choose your dream destination</p>
+                            <div class="form-group">
+                                <input type="text" id="destCountry" placeholder="Search countries or regions..." class="autocomplete-input">
+                                <div class="autocomplete-suggestions" id="countrySuggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="2">
+                        <div class="step-content">
+                            <h3>Where are you departing from?</h3>
+                            <p>Your starting city or airport</p>
+                            <div class="form-group">
+                                <input type="text" id="departureCity" placeholder="Search cities or airports..." class="autocomplete-input">
+                                <div class="autocomplete-suggestions" id="citySuggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="3">
+                        <div class="step-content">
+                            <h3>When do you want to depart?</h3>
+                            <p>Choose your departure date</p>
+                            <div class="form-group">
+                                <input type="date" id="startDate" class="date-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="4">
+                        <div class="step-content">
+                            <h3>How long is your trip?</h3>
+                            <p>Select the duration of your adventure</p>
+                            <div class="form-group">
+                                <div class="duration-controls">
+                                    <input type="range" id="durationSlider" min="2" max="30" value="7" class="duration-slider">
+                                    <input type="number" id="durationNumber" min="2" max="30" value="7" class="duration-number">
+                                    <span class="duration-label">days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="5">
+                        <div class="step-content">
+                            <h3>Who's traveling?</h3>
+                            <p>Tell us about your travel companions</p>
+                            <div class="form-group">
+                                <div class="traveller-counters">
+                                    <div class="counter-group">
+                                        <label>Adults</label>
+                                        <div class="counter">
+                                            <button type="button" class="counter-btn" onclick="updateCounter('adults', -1)">-</button>
+                                            <span id="adultsCount">1</span>
+                                            <button type="button" class="counter-btn" onclick="updateCounter('adults', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="counter-group">
+                                        <label>Kids</label>
+                                        <div class="counter">
+                                            <button type="button" class="counter-btn" onclick="updateCounter('kids', -1)">-</button>
+                                            <span id="kidsCount">0</span>
+                                            <button type="button" class="counter-btn" onclick="updateCounter('kids', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="6">
+                        <div class="step-content">
+                            <h3>Which cities would you like to visit?</h3>
+                            <p>Select from AI-suggested destinations</p>
+                            <div class="form-group">
+                                <div class="loading-cities" id="loadingCities">
+                                    <div class="spinner-small"></div>
+                                    <span>Getting AI suggestions...</span>
+                                </div>
+                                <div class="cities-grid" id="citiesGrid">
+                                    <!-- Cities will be populated by AI -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-step" data-step="7">
+                        <div class="step-content">
+                            <h3>What are your interests?</h3>
+                            <p>Choose what excites you most (optional)</p>
+                            <div class="form-group">
+                                <div class="interests-grid">
+                                    <div class="interest-chip" data-interest="beach">
+                                        <i class="fas fa-umbrella-beach"></i>
+                                        <span>Beach</span>
+                                    </div>
+                                    <div class="interest-chip" data-interest="culture">
+                                        <i class="fas fa-landmark"></i>
+                                        <span>Culture</span>
+                                    </div>
+                                    <div class="interest-chip" data-interest="food">
+                                        <i class="fas fa-utensils"></i>
+                                        <span>Food</span>
+                                    </div>
+                                    <div class="interest-chip" data-interest="adventure">
+                                        <i class="fas fa-mountain"></i>
+                                        <span>Adventure</span>
+                                    </div>
+                                    <div class="interest-chip" data-interest="relax">
+                                        <i class="fas fa-spa"></i>
+                                        <span>Relax</span>
+                                    </div>
+                                    <div class="interest-chip" data-interest="nightlife">
+                                        <i class="fas fa-cocktail"></i>
+                                        <span>Nightlife</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Navigation -->
+                <div class="wizard-footer">
+                    <button class="wizard-btn secondary" id="backBtn" onclick="previousStep()" disabled>
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button class="wizard-btn primary" id="nextBtn" onclick="nextStep()">
+                        Next
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Results Section -->
-    <section id="results" class="results hidden">
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard-section hidden">
         <div class="container">
-            <div class="results-header">
-                <h2>Your Personalized Itinerary</h2>
-                <div class="results-actions">
-                    <button class="action-button save-button">
-                        <i class="fas fa-bookmark"></i>
-                        Save Trip
+            <div class="dashboard-header">
+                <h2>My Trips</h2>
+                <button class="create-trip-btn" onclick="startWizard()">
+                    <i class="fas fa-plus"></i>
+                    Create New Trip
+                </button>
+            </div>
+            <div class="trips-grid" id="tripsGrid">
+                <!-- Trips will be populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Trip Builder (Kanban) Section -->
+    <section id="trip-builder" class="trip-builder-section hidden">
+        <div class="container">
+            <div class="trip-builder-header">
+                <div class="trip-info">
+                    <h2 id="tripTitle">Trip to Paris</h2>
+                    <p id="tripDetails">7 days • 2 adults • Mar 15, 2024</p>
+                </div>
+                <div class="trip-actions">
+                    <button class="action-btn" onclick="saveTrip()">
+                        <i class="fas fa-save"></i>
+                        Save
                     </button>
-                    <button class="action-button share-button">
+                    <button class="action-btn" onclick="shareTrip()">
                         <i class="fas fa-share"></i>
                         Share
                     </button>
-                    <button class="action-button print-button">
-                        <i class="fas fa-print"></i>
-                        Print
+                    <button class="action-btn" onclick="backToDashboard()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
                     </button>
                 </div>
             </div>
             
-            <div class="itinerary-container">
-                <div class="itinerary-sidebar">
-                    <div class="trip-summary">
-                        <h3>Trip Summary</h3>
-                        <div class="summary-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span id="summary-destination">-</span>
-                        </div>
-                        <div class="summary-item">
-                            <i class="fas fa-calendar"></i>
-                            <span id="summary-duration">-</span>
-                        </div>
-                        <div class="summary-item">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span id="summary-budget">-</span>
-                        </div>
-                        <div class="summary-item">
-                            <i class="fas fa-users"></i>
-                            <span id="summary-travelers">-</span>
-                        </div>
-                    </div>
-                    
-                    <div class="quick-tips">
-                        <h3>Quick Tips</h3>
-                        <ul id="tips-list">
-                            <!-- Tips will be populated by JavaScript -->
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="itinerary-content">
-                    <div id="itinerary-days">
-                        <!-- Itinerary days will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Saved Trips Section -->
-    <section id="saved" class="saved-trips">
-        <div class="container">
-            <div class="section-header">
-                <h2>Your Saved Trips</h2>
-                <p>Access your previously generated itineraries</p>
-            </div>
-            
-            <div class="saved-trips-grid" id="savedTripsGrid">
-                <div class="empty-state">
-                    <i class="fas fa-suitcase"></i>
-                    <h3>No saved trips yet</h3>
-                    <p>Start planning your first trip to see it here!</p>
-                </div>
+            <div class="kanban-board" id="kanbanBoard">
+                <!-- Kanban columns will be generated by JS -->
             </div>
         </div>
     </section>
@@ -276,7 +293,7 @@
             <div class="loading-steps">
                 <div class="step active">
                     <i class="fas fa-search"></i>
-                    <span>Researching destination</span>
+                    <span>Analyzing destination</span>
                 </div>
                 <div class="step">
                     <i class="fas fa-map"></i>
@@ -294,9 +311,13 @@
         </div>
     </div>
 
+    <!-- Confetti Canvas -->
+    <canvas id="confetti" class="confetti-canvas"></canvas>
+
     <!-- Scripts -->
-    <script src="js/main.js"></script>
-    <script src="js/itinerary.js"></script>
+    <script src="js/wizard.js"></script>
+    <script src="js/kanban.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
