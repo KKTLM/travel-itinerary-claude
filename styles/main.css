@@ -1332,19 +1332,23 @@ body {
 }
 
 .demo-notice {
-    margin-top: 16px;
-    padding: 12px;
+    padding: 16px 32px 24px;
     background: rgba(59, 130, 246, 0.1);
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+    text-align: center;
 }
 
 .demo-notice small {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
     color: var(--primary-color) !important;
-    font-weight: 500;
+    font-size: 13px;
+}
+
+.demo-notice strong {
+    font-weight: 600;
 }
 
 /* Responsive Design */
