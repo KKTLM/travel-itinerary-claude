@@ -109,6 +109,13 @@ class AuthManager {
             this.showAuthError('Please fill in all fields');
             return;
         }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            this.showAuthError('Please enter a valid email address');
+            return;
+        }
 
         if (isSignUp && password !== passwordConfirm) {
             this.showAuthError('Passwords do not match');
@@ -135,15 +142,19 @@ class AuthManager {
                 this.showAuthError(result.error);
             } else {
                 if (isSignUp) {
-                    this.showAuthSuccess('Account created successfully! Please check your email to verify your account.');
+                    this.showAuthSuccess('Account created successfully! You are now signed in.');
+                    setTimeout(() => {
+                        this.closeAuthModal();
+                    }, 1500);
                 } else {
                     this.showAuthSuccess('Signed in successfully!');
                     setTimeout(() => {
                         this.closeAuthModal();
-                    }, 1000);
+                    }, 1500);
                 }
             }
         } catch (error) {
+            console.error('Auth error:', error);
             this.showAuthError('An unexpected error occurred. Please try again.');
         } finally {
             this.setAuthLoading(false);

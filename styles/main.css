@@ -1331,6 +1331,22 @@ body {
     text-decoration: underline;
 }
 
+.demo-notice {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.demo-notice small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color) !important;
+    font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {

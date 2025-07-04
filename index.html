@@ -326,6 +326,69 @@
         </div>
     </div>
 
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content auth-modal">
+            <div class="auth-header">
+                <h3 id="authTitle">Welcome to TravelAI</h3>
+                <p id="authSubtitle">Sign in to save and manage your trips</p>
+                <button class="modal-close" onclick="closeAuthModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="signin" onclick="switchAuthTab('signin')">
+                    Sign In
+                </button>
+                <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">
+                    Sign Up
+                </button>
+            </div>
+
+            <form id="authForm" class="auth-form">
+                <div class="form-group">
+                    <label for="authEmail">Email</label>
+                    <input type="email" id="authEmail" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" required placeholder="Enter your password">
+                </div>
+
+                <div class="form-group signup-only hidden">
+                    <label for="authPasswordConfirm">Confirm Password</label>
+                    <input type="password" id="authPasswordConfirm" placeholder="Confirm your password">
+                </div>
+
+                <button type="submit" class="auth-submit-btn" id="authSubmitBtn">
+                    <span id="authSubmitText">Sign In</span>
+                    <div class="auth-spinner hidden"></div>
+                </button>
+
+                <div class="auth-error hidden" id="authError"></div>
+                <div class="auth-success hidden" id="authSuccess"></div>
+            </form>
+
+            <div class="auth-footer">
+                <p class="signin-only">
+                    Don't have an account? 
+                    <a href="#" onclick="switchAuthTab('signup')">Sign up here</a>
+                </p>
+                <p class="signup-only hidden">
+                    Already have an account? 
+                    <a href="#" onclick="switchAuthTab('signin')">Sign in here</a>
+                </p>
+                <div class="demo-notice">
+                    <small style="color: var(--text-light); margin-top: 16px; display: block;">
+                        <i class="fas fa-info-circle"></i>
+                        Demo Mode: Any email/password (6+ chars) will work
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Confetti Canvas -->
     <canvas id="confetti" class="confetti-canvas"></canvas>
 

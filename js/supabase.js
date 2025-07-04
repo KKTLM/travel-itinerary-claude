@@ -72,6 +72,26 @@ class SupabaseClient {
     async signUp(email, password) {
         if (!this.supabase) {
             // Mock signup for demo
+            if (!email || !password) {
+                return { user: null, error: 'Email and password are required' };
+            }
+            
+            if (password.length < 6) {
+                return { user: null, error: 'Password must be at least 6 characters' };
+            }
+            
+            // Check if user already exists in mock storage
+            const existingUser = localStorage.getItem('mock_user');
+            if (existingUser) {
+                const user = JSON.parse(existingUser);
+                if (user.email === email) {
+                    return { user: null, error: 'An account with this email already exists' };
+                }
+            }
+            
+            // Simulate a brief delay like a real API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
             const mockUser = {
                 id: Date.now().toString(),
                 email: email,
@@ -96,13 +116,36 @@ class SupabaseClient {
             return { user: data.user, error: null };
         } catch (error) {
             console.error('Signup error:', error);
-            return { user: null, error: error.message };
+            
+            // Provide more user-friendly error messages
+            let errorMessage = error.message;
+            if (error.message.includes('User already registered')) {
+                errorMessage = 'An account with this email already exists. Please sign in instead.';
+            } else if (error.message.includes('Password should be at least')) {
+                errorMessage = 'Password must be at least 6 characters long.';
+            } else if (error.message.includes('Invalid email')) {
+                errorMessage = 'Please enter a valid email address.';
+            }
+            
+            return { user: null, error: errorMessage };
         }
     }
 
     async signIn(email, password) {
         if (!this.supabase) {
             // Mock signin for demo
+            // Simulate some basic validation
+            if (!email || !password) {
+                return { user: null, error: 'Email and password are required' };
+            }
+            
+            if (password.length < 6) {
+                return { user: null, error: 'Password must be at least 6 characters' };
+            }
+            
+            // Simulate a brief delay like a real API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
             const mockUser = {
                 id: Date.now().toString(),
                 email: email,
@@ -124,7 +167,18 @@ class SupabaseClient {
             return { user: data.user, error: null };
         } catch (error) {
             console.error('Signin error:', error);
-            return { user: null, error: error.message };
+            
+            // Provide more user-friendly error messages
+            let errorMessage = error.message;
+            if (error.message.includes('Invalid login credentials')) {
+                errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+            } else if (error.message.includes('Email not confirmed')) {
+                errorMessage = 'Please check your email and click the confirmation link before signing in.';
+            } else if (error.message.includes('Too many requests')) {
+                errorMessage = 'Too many login attempts. Please wait a moment and try again.';
+            }
+            
+            return { user: null, error: errorMessage };
         }
     }
 
