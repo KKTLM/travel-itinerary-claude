@@ -286,9 +286,20 @@ class TripBuilder {
 
     saveTrip() {
         if (!this.currentTrip) return;
+        
+        if (!window.supabaseClient.isAuthenticated()) {
+            window.authManager.openAuthModal();
+            return;
+        }
 
-        window.storageManager.saveTrip(this.currentTrip);
-        this.showNotification('Trip saved successfully!', 'success');
+        window.supabaseClient.saveTrip(this.currentTrip)
+            .then(() => {
+                this.showNotification('Trip saved successfully!', 'success');
+            })
+            .catch((error) => {
+                console.error('Error saving trip:', error);
+                this.showNotification('Failed to save trip', 'error');
+            });
     }
 
     shareTrip() {

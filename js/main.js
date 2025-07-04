@@ -82,8 +82,23 @@ class TravelApp {
     initializeDashboard() {
         window.tripDashboard = new TripDashboard();
     }
+    
+    requireAuth(callback) {
+        if (!window.supabaseClient.isAuthenticated()) {
+            window.authManager.openAuthModal();
+            return false;
+        }
+        callback();
+        return true;
+    }
 
     navigateToSection(sectionId) {
+        // Check authentication for protected sections
+        if (sectionId === 'dashboard' && !window.supabaseClient.isAuthenticated()) {
+            window.authManager.openAuthModal();
+            return;
+        }
+        
         // Hide all sections
         document.querySelectorAll('section').forEach(section => {
             section.classList.add('hidden');
@@ -141,9 +156,21 @@ class TripDashboard {
         this.trips = [];
     }
 
-    loadTrips() {
-        this.trips = window.storageManager.getSavedTrips();
-        this.renderTrips();
+    async loadTrips() {
+        if (!window.supabaseClient.isAuthenticated()) {
+            this.trips = [];
+            this.renderTrips();
+            return;
+        }
+
+        try {
+            this.trips = await window.supabaseClient.getUserTrips();
+            this.renderTrips();
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            this.trips = [];
+            this.renderTrips();
+        }
     }
 
     renderTrips() {
@@ -180,9 +207,11 @@ class TripDashboard {
             year: 'numeric'
         });
 
-        const adults = trip.travellers.adults;
-        const kids = trip.travellers.kids;
+        const adults = trip.travellers?.adults || 1;
+        const kids = trip.travellers?.kids || 0;
         const travellersText = adults + (kids > 0 ? ` adults, ${kids} kids` : ' adults');
+        
+        const cities = trip.cities || ['City'];
 
         return `
             <div class="trip-card" onclick="openTrip('${trip.id}')">
@@ -192,7 +221,7 @@ class TripDashboard {
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-                <p>${trip.cities.join(', ')}</p>
+                <p>${cities.join(', ')}</p>
                 <div class="trip-meta">
                     <span><i class="fas fa-calendar"></i> ${trip.duration} days</span>
                     <span><i class="fas fa-users"></i> ${travellersText}</span>
@@ -206,28 +235,46 @@ class TripDashboard {
     }
 
     openTrip(tripId) {
-        const trip = window.storageManager.getTrip(tripId);
+        const trip = this.trips.find(t => t.id === tripId);
         if (trip) {
             window.tripBuilder.loadTrip(trip);
             window.travelWizard.showSection('trip-builder');
         }
     }
 
-    deleteTrip(tripId) {
+    async deleteTrip(tripId) {
         if (confirm('Are you sure you want to delete this trip?')) {
-            window.storageManager.deleteTrip(tripId);
-            this.loadTrips();
+            try {
+                await window.supabaseClient.deleteTrip(tripId);
+                await this.loadTrips();
+            } catch (error) {
+                console.error('Error deleting trip:', error);
+                alert('Failed to delete trip. Please try again.');
+            }
         }
     }
 }
 
 // Global functions
+function handleDashboardClick() {
+    if (!window.supabaseClient.isAuthenticated()) {
+        window.authManager.openAuthModal();
+        return;
+    }
+    showDashboard();
+}
+
 function openTrip(tripId) {
     window.tripDashboard.openTrip(tripId);
 }
 
 function deleteTrip(tripId) {
     window.tripDashboard.deleteTrip(tripId);
+}
+
+function showDashboard() {
+    window.travelApp.navigateToSection('dashboard');
+    window.tripDashboard.loadTrips();
 }
 
 // Initialize app

@@ -327,6 +327,12 @@ class TravelWizard {
     }
 
     async generateItinerary() {
+        // Check authentication
+        if (!window.supabaseClient.isAuthenticated()) {
+            window.authManager.openAuthModal();
+            return;
+        }
+        
         // Show loading modal
         document.getElementById('loadingModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -346,7 +352,7 @@ class TravelWizard {
                 createdAt: new Date().toISOString()
             };
 
-            window.storageManager.saveTrip(trip);
+            await window.supabaseClient.saveTrip(trip);
             
             // Hide loading modal
             document.getElementById('loadingModal').classList.add('hidden');
@@ -365,7 +371,12 @@ class TravelWizard {
             console.error('Error generating itinerary:', error);
             document.getElementById('loadingModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
-            alert('Failed to generate itinerary. Please try again.');
+            
+            if (error.message.includes('authenticated')) {
+                window.authManager.openAuthModal();
+            } else {
+                alert('Failed to generate itinerary. Please try again.');
+            }
         }
     }
 
@@ -540,11 +551,19 @@ class TravelWizard {
 
 // Global functions
 function startWizard() {
+    if (!window.supabaseClient.isAuthenticated()) {
+        window.authManager.openAuthModal();
+        return;
+    }
     window.travelWizard.reset();
     window.travelWizard.showSection('wizard');
 }
 
 function skipWizard() {
+    if (!window.supabaseClient.isAuthenticated()) {
+        window.authManager.openAuthModal();
+        return;
+    }
     // Navigate to manual trip builder
     window.tripBuilder.createNewTrip();
     window.travelWizard.showSection('trip-builder');
@@ -570,11 +589,6 @@ function updateCounter(type, delta) {
     
     countElement.textContent = currentValue;
     window.travelWizard.wizardForm.travellers[type] = currentValue;
-}
-
-function showDashboard() {
-    window.travelWizard.showSection('dashboard');
-    window.tripDashboard.loadTrips();
 }
 
 // Add shake animation to CSS
