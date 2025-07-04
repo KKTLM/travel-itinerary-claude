@@ -104,26 +104,19 @@ class AuthManager {
         // Clear previous messages
         this.hideAuthMessage();
 
-        // Validation
-        if (!email || !password) {
-            this.showAuthError('Please fill in all fields');
+        // Basic client-side validation
+        if (!email.trim()) {
+            this.showAuthError('Please enter your email address');
             return;
         }
         
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            this.showAuthError('Please enter a valid email address');
+        if (!password) {
+            this.showAuthError('Please enter your password');
             return;
         }
-
+        
         if (isSignUp && password !== passwordConfirm) {
             this.showAuthError('Passwords do not match');
-            return;
-        }
-
-        if (password.length < 6) {
-            this.showAuthError('Password must be at least 6 characters');
             return;
         }
 
@@ -142,20 +135,20 @@ class AuthManager {
                 this.showAuthError(result.error);
             } else {
                 if (isSignUp) {
-                    this.showAuthSuccess('Account created successfully! You are now signed in.');
+                    this.showAuthSuccess('Account created successfully! Welcome to TravelAI.');
                     setTimeout(() => {
                         this.closeAuthModal();
-                    }, 1500);
+                    }, 2000);
                 } else {
-                    this.showAuthSuccess('Signed in successfully!');
+                    this.showAuthSuccess('Welcome back! You are now signed in.');
                     setTimeout(() => {
                         this.closeAuthModal();
-                    }, 1500);
+                    }, 2000);
                 }
             }
         } catch (error) {
             console.error('Auth error:', error);
-            this.showAuthError('An unexpected error occurred. Please try again.');
+            this.showAuthError('Something went wrong. Please check your connection and try again.');
         } finally {
             this.setAuthLoading(false);
         }

@@ -73,11 +73,17 @@ class SupabaseClient {
         if (!this.supabase) {
             // Mock signup for demo
             if (!email || !password) {
-                return { user: null, error: 'Email and password are required' };
+                return { user: null, error: 'Please enter both email and password' };
+            }
+            
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return { user: null, error: 'Please enter a valid email address' };
             }
             
             if (password.length < 6) {
-                return { user: null, error: 'Password must be at least 6 characters' };
+                return { user: null, error: 'Password must be at least 6 characters long' };
             }
             
             // Check if user already exists in mock storage
@@ -90,7 +96,7 @@ class SupabaseClient {
             }
             
             // Simulate a brief delay like a real API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 1800));
             
             const mockUser = {
                 id: Date.now().toString(),
@@ -134,17 +140,22 @@ class SupabaseClient {
     async signIn(email, password) {
         if (!this.supabase) {
             // Mock signin for demo
-            // Simulate some basic validation
             if (!email || !password) {
-                return { user: null, error: 'Email and password are required' };
+                return { user: null, error: 'Please enter both email and password' };
+            }
+            
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return { user: null, error: 'Please enter a valid email address' };
             }
             
             if (password.length < 6) {
-                return { user: null, error: 'Password must be at least 6 characters' };
+                return { user: null, error: 'Password must be at least 6 characters long' };
             }
             
-            // Simulate a brief delay like a real API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1200));
             
             const mockUser = {
                 id: Date.now().toString(),
