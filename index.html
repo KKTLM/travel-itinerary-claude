@@ -1,51 +1,302 @@
-{
-  "name": "travel-itinerary-webapp",
-  "version": "1.0.0",
-  "description": "AI-powered travel itinerary planner with modern web technologies",
-  "main": "index.html",
-  "scripts": {
-    "start": "python -m http.server 8000",
-    "serve": "npx serve .",
-    "dev": "npx live-server --port=3000",
-    "build": "echo 'No build process needed for static site'",
-    "deploy": "vercel --prod",
-    "lint": "echo 'Linting not configured yet'",
-    "test": "echo 'Tests not configured yet'"
-  },
-  "keywords": [
-    "travel",
-    "itinerary",
-    "ai",
-    "planning",
-    "vacation",
-    "trip",
-    "supabase",
-    "gemini",
-    "javascript",
-    "html",
-    "css"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp.git"
-  },
-  "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp/issues"
-  },
-  "homepage": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp#readme",
-  "devDependencies": {
-    "live-server": "^1.2.2",
-    "serve": "^14.2.1"
-  },
-  "dependencies": {},
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelAI - Smart Itinerary Planner</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-plane-departure"></i>
+                <span>TravelAI</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#planner" class="nav-link">Planner</a>
+                <a href="#saved" class="nav-link">Saved Trips</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">Plan Your Perfect Journey</h1>
+            <p class="hero-subtitle">AI-powered travel itinerary planner that creates personalized trips tailored to your preferences, budget, and schedule.</p>
+            <button class="cta-button" onclick="scrollToPlanner()">
+                <span>Start Planning</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="hero-features">
+            <div class="feature-card">
+                <i class="fas fa-robot"></i>
+                <h3>AI-Powered</h3>
+                <p>Smart recommendations based on your preferences</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Personalized</h3>
+                <p>Custom itineraries for every type of traveler</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-clock"></i>
+                <h3>Time-Saving</h3>
+                <p>Generate complete itineraries in seconds</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planner Section -->
+    <section id="planner" class="planner">
+        <div class="container">
+            <div class="section-header">
+                <h2>Create Your Itinerary</h2>
+                <p>Tell us about your dream trip and let AI do the planning</p>
+            </div>
+            
+            <div class="planner-form">
+                <form id="itineraryForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="destination">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Destination
+                            </label>
+                            <input type="text" id="destination" name="destination" placeholder="Where do you want to go?" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duration">
+                                <i class="fas fa-calendar-alt"></i>
+                                Duration
+                            </label>
+                            <select id="duration" name="duration" required>
+                                <option value="">Select duration</option>
+                                <option value="1">1 Day</option>
+                                <option value="2">2 Days</option>
+                                <option value="3">3 Days</option>
+                                <option value="4">4 Days</option>
+                                <option value="5">5 Days</option>
+                                <option value="7">1 Week</option>
+                                <option value="10">10 Days</option>
+                                <option value="14">2 Weeks</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="budget">
+                                <i class="fas fa-dollar-sign"></i>
+                                Budget Range
+                            </label>
+                            <select id="budget" name="budget" required>
+                                <option value="">Select budget</option>
+                                <option value="budget">Budget ($0-$50/day)</option>
+                                <option value="mid-range">Mid-range ($50-$150/day)</option>
+                                <option value="luxury">Luxury ($150+/day)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="travelers">
+                                <i class="fas fa-users"></i>
+                                Travelers
+                            </label>
+                            <select id="travelers" name="travelers" required>
+                                <option value="">Number of travelers</option>
+                                <option value="1">Solo traveler</option>
+                                <option value="2">Couple</option>
+                                <option value="3-4">Small group (3-4)</option>
+                                <option value="5+">Large group (5+)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="interests">
+                            <i class="fas fa-heart"></i>
+                            Interests & Preferences
+                        </label>
+                        <div class="interests-grid">
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="culture">
+                                <span>Culture & History</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="food">
+                                <span>Food & Dining</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="adventure">
+                                <span>Adventure</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="nature">
+                                <span>Nature</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="nightlife">
+                                <span>Nightlife</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="shopping">
+                                <span>Shopping</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="relaxation">
+                                <span>Relaxation</span>
+                            </label>
+                            <label class="interest-tag">
+                                <input type="checkbox" name="interests" value="photography">
+                                <span>Photography</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="additional">
+                            <i class="fas fa-comment"></i>
+                            Additional Requirements
+                        </label>
+                        <textarea id="additional" name="additional" placeholder="Any specific requirements, accessibility needs, or special requests?"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="generate-button">
+                        <span>Generate Itinerary</span>
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="results hidden">
+        <div class="container">
+            <div class="results-header">
+                <h2>Your Personalized Itinerary</h2>
+                <div class="results-actions">
+                    <button class="action-button save-button">
+                        <i class="fas fa-bookmark"></i>
+                        Save Trip
+                    </button>
+                    <button class="action-button share-button">
+                        <i class="fas fa-share"></i>
+                        Share
+                    </button>
+                    <button class="action-button print-button">
+                        <i class="fas fa-print"></i>
+                        Print
+                    </button>
+                </div>
+            </div>
+            
+            <div class="itinerary-container">
+                <div class="itinerary-sidebar">
+                    <div class="trip-summary">
+                        <h3>Trip Summary</h3>
+                        <div class="summary-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="summary-destination">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-calendar"></i>
+                            <span id="summary-duration">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span id="summary-budget">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-users"></i>
+                            <span id="summary-travelers">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-tips">
+                        <h3>Quick Tips</h3>
+                        <ul id="tips-list">
+                            <!-- Tips will be populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="itinerary-content">
+                    <div id="itinerary-days">
+                        <!-- Itinerary days will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Saved Trips Section -->
+    <section id="saved" class="saved-trips">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Saved Trips</h2>
+                <p>Access your previously generated itineraries</p>
+            </div>
+            
+            <div class="saved-trips-grid" id="savedTripsGrid">
+                <div class="empty-state">
+                    <i class="fas fa-suitcase"></i>
+                    <h3>No saved trips yet</h3>
+                    <p>Start planning your first trip to see it here!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h3>Creating Your Perfect Itinerary</h3>
+            <p>Our AI is analyzing your preferences and crafting a personalized travel plan...</p>
+            <div class="loading-steps">
+                <div class="step active">
+                    <i class="fas fa-search"></i>
+                    <span>Researching destination</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-map"></i>
+                    <span>Planning routes</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-star"></i>
+                    <span>Finding attractions</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-check"></i>
+                    <span>Finalizing itinerary</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/itinerary.js"></script>
+    <script src="js/storage.js"></script>
+</body>
+</html>

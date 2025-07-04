@@ -1,0 +1,51 @@
+{
+  "name": "travel-itinerary-webapp",
+  "version": "1.0.0",
+  "description": "AI-powered travel itinerary planner with modern web technologies",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "dev": "npx live-server --port=3000",
+    "build": "echo 'No build process needed for static site'",
+    "deploy": "vercel --prod",
+    "lint": "echo 'Linting not configured yet'",
+    "test": "echo 'Tests not configured yet'"
+  },
+  "keywords": [
+    "travel",
+    "itinerary",
+    "ai",
+    "planning",
+    "vacation",
+    "trip",
+    "supabase",
+    "gemini",
+    "javascript",
+    "html",
+    "css"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/travel-itinerary-webapp#readme",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.1"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
