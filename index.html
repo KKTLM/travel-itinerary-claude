@@ -3,402 +3,1724 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TravelAI - Smart Itinerary Planner</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>TravelLikes_Me - Create Your Perfect Itinerary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --primary: #2E7DFF;
+            --accent: #FCD34D;
+            --success: #10B981;
+            --error: #EF4444;
+            --grey-50: #F9FAFB;
+            --grey-100: #F3F4F6;
+            --grey-200: #E5E7EB;
+            --grey-300: #D1D5DB;
+            --grey-400: #9CA3AF;
+            --grey-500: #6B7280;
+            --grey-600: #4B5563;
+            --grey-700: #374151;
+            --grey-800: #1F2937;
+            --grey-900: #111827;
+            --radius: 12px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--grey-50);
+            color: var(--grey-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--grey-700);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #1E5DBF;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--grey-700);
+            border: 2px solid var(--grey-200);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #1E5DBF 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-search {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .hero-search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 0.5rem;
+            color: var(--grey-800);
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .search-dropdown.show {
+            display: block;
+        }
+
+        .search-item {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-item:hover {
+            background: var(--grey-50);
+        }
+
+        .search-item-info {
+            flex: 1;
+        }
+
+        .search-item-name {
+            font-weight: 600;
+            color: var(--grey-800);
+        }
+
+        .search-item-tag {
+            font-size: 0.75rem;
+            background: var(--accent);
+            color: var(--grey-800);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        /* Genre Chips */
+        .genre-section {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .genre-section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--grey-800);
+        }
+
+        .genre-chips {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .chip-genre {
+            background: white;
+            border: 2px solid var(--grey-200);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chip-genre:hover, .chip-genre.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Wizard Modal */
+        .wizard-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .wizard-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wizard-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .wizard-header {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, #1E5DBF 100%);
+            color: white;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .wizard-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .wizard-progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-step {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .progress-step.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .wizard-step {
+            display: none;
+            padding: 2rem;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .wizard-step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--grey-800);
+            text-align: center;
+        }
+
+        .wizard-step p {
+            color: var(--grey-600);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Enhanced Form Elements */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .search-input-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            background: var(--grey-50);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:hover {
+            background: var(--grey-50);
+        }
+
+        .suggestion-tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .tag-trending { background: #FFE4E1; color: #D63384; }
+        .tag-budget { background: #E7F3FF; color: var(--primary); }
+        .tag-popular { background: #F0FDF4; color: var(--success); }
+        .tag-affordable { background: #FFFBEB; color: #F59E0B; }
+
+        /* Travel Time Analysis */
+        .time-analysis {
+            background: #FFF8E1;
+            border: 1px solid #FFD54F;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .time-analysis .analysis-icon {
+            color: #F57F17;
+        }
+
+        /* Month Selection Grid */
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .month-card {
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .month-card:hover {
+            border-color: var(--primary);
+        }
+
+        .month-card.active {
+            border-color: var(--primary);
+            background: #EBF4FF;
+        }
+
+        .month-card.best-time {
+            border-color: var(--success);
+            background: #F0FDF4;
+        }
+
+        .month-card.crowded {
+            border-color: #F59E0B;
+            background: #FFFBEB;
+        }
+
+        .month-card.off-season {
+            border-color: var(--grey-300);
+            background: var(--grey-50);
+        }
+
+        .month-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .month-season {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .month-temp {
+            font-size: 0.8rem;
+            color: var(--grey-600);
+        }
+
+        .season-best { background: var(--success); color: white; }
+        .season-good { background: var(--primary); color: white; }
+        .season-crowded { background: #F59E0B; color: white; }
+        .season-off { background: var(--grey-400); color: white; }
+
+        /* Calendar Widget */
+        .calendar-widget {
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--grey-200);
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day:hover {
+            background: var(--grey-50);
+        }
+
+        .calendar-day.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: var(--grey-400);
+            cursor: not-allowed;
+        }
+
+        .calendar-day.other-month {
+            color: var(--grey-400);
+        }
+
+        /* Duration Selection */
+        .duration-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .duration-card {
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .duration-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .duration-card.active {
+            border-color: var(--primary);
+            background: #EBF4FF;
+        }
+
+        .duration-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .duration-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .duration-label {
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: #EBF4FF;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Traveler Selection */
+        .traveler-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .traveler-card {
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .traveler-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .traveler-card.active {
+            border-color: var(--primary);
+            background: #EBF4FF;
+        }
+
+        .traveler-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .traveler-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Cities Grid */
+        .cities-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .city-item {
+            background: white;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .city-item:hover {
+            border-color: var(--primary);
+        }
+
+        .city-item.active {
+            border-color: var(--primary);
+            background: #EBF4FF;
+        }
+
+        .city-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary) 0%, #1E5DBF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .city-info {
+            flex: 1;
+        }
+
+        .city-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .city-description {
+            font-size: 0.875rem;
+            color: var(--grey-600);
+        }
+
+        .city-tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            display: none;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .loading-screen.active {
+            display: block;
+        }
+
+        .loading-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .loading-plane {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .loading-circle {
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--grey-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--grey-800);
+        }
+
+        .loading-subtext {
+            color: var(--grey-600);
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
+        }
+
+        /* Itinerary Result */
+        .itinerary-result {
+            display: none;
+            padding: 2rem;
+        }
+
+        .itinerary-result.active {
+            display: block;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .result-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-subtitle {
+            color: var(--grey-600);
+            margin-bottom: 1rem;
+        }
+
+        .result-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--grey-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            color: var(--primary);
+        }
+
+        .stat-text {
+            font-size: 0.875rem;
+            color: var(--grey-600);
+        }
+
+        .day-plan {
+            background: var(--grey-50);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .day-title {
+            font-weight: 600;
+        }
+
+        .add-activity-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Wizard Footer */
+        .wizard-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 2rem;
+            border-top: 1px solid var(--grey-200);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .wizard-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+            
+            .month-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .duration-options,
+            .traveler-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 1rem; }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-plane-departure"></i>
-                <span>TravelAI</span>
-            </div>
-            <div class="nav-menu">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#dashboard" class="nav-link" style="display: none;">My Trips</a>
-                <a href="#about" class="nav-link">About</a>
-                <button id="authButton" class="auth-button" onclick="openAuthModal()">
-                    <i class="fas fa-user"></i>
-                    <span>Sign In</span>
-                </button>
-                <div id="userMenu" class="user-menu" style="display: none;">
-                    <div class="user-info">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="userEmail">user@example.com</span>
-                    </div>
-                    <button class="user-menu-btn" onclick="signOut()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Sign Out
-                    </button>
-                </div>
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="hero-overlay"></div>
-        </div>
-        <div class="hero-content">
-            <h1 class="hero-title">Plan Your Perfect Journey</h1>
-            <p class="hero-subtitle">AI-powered travel wizard that creates personalized itineraries in under 60 seconds. Just answer a few questions and let Gemini AI do the rest.</p>
-            <button class="cta-button" onclick="startWizard()">
-                <span>Start AI Wizard</span>
-                <i class="fas fa-magic"></i>
-            </button>
-            <div class="hero-actions">
-                <button class="secondary-button" onclick="handleDashboardClick()">
-                    <span>View My Trips</span>
-                    <i class="fas fa-suitcase"></i>
-                </button>
-            </div>
-        </div>
-        <div class="hero-features">
-            <div class="feature-card">
-                <i class="fas fa-robot"></i>
-                <h3>AI-Powered</h3>
-                <p>Gemini AI creates personalized itineraries based on your preferences</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-clock"></i>
-                <h3>60-Second Setup</h3>
-                <p>Complete wizard in under a minute, even on 3G</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-edit"></i>
-                <h3>Fully Editable</h3>
-                <p>Drag, drop, and customize your AI-generated itinerary</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Wizard Section -->
-    <section id="wizard" class="wizard-section hidden">
+    <!-- Header -->
+    <header class="header">
         <div class="container">
-            <div class="wizard-container">
-                <div class="wizard-header">
-                    <h2>AI Travel Wizard</h2>
-                    <p>Let's create your perfect trip in 7 simple steps</p>
-                    <button class="skip-wizard" onclick="skipWizard()">
-                        Skip wizard / Plan manually
-                    </button>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-dots" id="progressDots">
-                        <!-- Dots will be generated by JS -->
-                    </div>
-                    <div class="progress-text">
-                        <span id="currentStep">1</span> of <span id="totalSteps">7</span>
-                    </div>
-                </div>
-
-                <!-- Wizard Steps -->
-                <div class="wizard-content">
-                    <div class="wizard-step active" data-step="1">
-                        <div class="step-content">
-                            <h3>Where would you like to go?</h3>
-                            <p>Choose your dream destination</p>
-                            <div class="form-group">
-                                <input type="text" id="destCountry" placeholder="Search countries or regions..." class="autocomplete-input">
-                                <div class="autocomplete-suggestions" id="countrySuggestions"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="2">
-                        <div class="step-content">
-                            <h3>Where are you departing from?</h3>
-                            <p>Your starting city or airport</p>
-                            <div class="form-group">
-                                <input type="text" id="departureCity" placeholder="Search cities or airports..." class="autocomplete-input">
-                                <div class="autocomplete-suggestions" id="citySuggestions"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="3">
-                        <div class="step-content">
-                            <h3>When do you want to depart?</h3>
-                            <p>Choose your departure date</p>
-                            <div class="form-group">
-                                <input type="date" id="startDate" class="date-input">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="4">
-                        <div class="step-content">
-                            <h3>How long is your trip?</h3>
-                            <p>Select the duration of your adventure</p>
-                            <div class="form-group">
-                                <div class="duration-controls">
-                                    <input type="range" id="durationSlider" min="2" max="30" value="7" class="duration-slider">
-                                    <input type="number" id="durationNumber" min="2" max="30" value="7" class="duration-number">
-                                    <span class="duration-label">days</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="5">
-                        <div class="step-content">
-                            <h3>Who's traveling?</h3>
-                            <p>Tell us about your travel companions</p>
-                            <div class="form-group">
-                                <div class="traveller-counters">
-                                    <div class="counter-group">
-                                        <label>Adults</label>
-                                        <div class="counter">
-                                            <button type="button" class="counter-btn" onclick="updateCounter('adults', -1)">-</button>
-                                            <span id="adultsCount">1</span>
-                                            <button type="button" class="counter-btn" onclick="updateCounter('adults', 1)">+</button>
-                                        </div>
-                                    </div>
-                                    <div class="counter-group">
-                                        <label>Kids</label>
-                                        <div class="counter">
-                                            <button type="button" class="counter-btn" onclick="updateCounter('kids', -1)">-</button>
-                                            <span id="kidsCount">0</span>
-                                            <button type="button" class="counter-btn" onclick="updateCounter('kids', 1)">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="6">
-                        <div class="step-content">
-                            <h3>Which cities would you like to visit?</h3>
-                            <p>Select from AI-suggested destinations</p>
-                            <div class="form-group">
-                                <div class="loading-cities" id="loadingCities">
-                                    <div class="spinner-small"></div>
-                                    <span>Getting AI suggestions...</span>
-                                </div>
-                                <div class="cities-grid" id="citiesGrid">
-                                    <!-- Cities will be populated by AI -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-step" data-step="7">
-                        <div class="step-content">
-                            <h3>What are your interests?</h3>
-                            <p>Choose what excites you most (optional)</p>
-                            <div class="form-group">
-                                <div class="interests-grid">
-                                    <div class="interest-chip" data-interest="beach">
-                                        <i class="fas fa-umbrella-beach"></i>
-                                        <span>Beach</span>
-                                    </div>
-                                    <div class="interest-chip" data-interest="culture">
-                                        <i class="fas fa-landmark"></i>
-                                        <span>Culture</span>
-                                    </div>
-                                    <div class="interest-chip" data-interest="food">
-                                        <i class="fas fa-utensils"></i>
-                                        <span>Food</span>
-                                    </div>
-                                    <div class="interest-chip" data-interest="adventure">
-                                        <i class="fas fa-mountain"></i>
-                                        <span>Adventure</span>
-                                    </div>
-                                    <div class="interest-chip" data-interest="relax">
-                                        <i class="fas fa-spa"></i>
-                                        <span>Relax</span>
-                                    </div>
-                                    <div class="interest-chip" data-interest="nightlife">
-                                        <i class="fas fa-cocktail"></i>
-                                        <span>Nightlife</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Wizard Navigation -->
-                <div class="wizard-footer">
-                    <button class="wizard-btn secondary" id="backBtn" onclick="previousStep()" disabled>
-                        <i class="fas fa-arrow-left"></i>
-                        Back
-                    </button>
-                    <button class="wizard-btn primary" id="nextBtn" onclick="nextStep()">
-                        Next
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
+            <div class="header-content">
+                <div class="logo">TravelLikes_Me</div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#" onclick="showLanding()">Home</a></li>
+                        <li><a href="#" onclick="showDashboard()">My Trips</a></li>
+                        <li><a href="#" onclick="showAuth()">Sign In</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </section>
+    </header>
 
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="dashboard-section hidden">
-        <div class="container">
-            <div class="dashboard-header">
-                <h2>My Trips</h2>
-                <button class="create-trip-btn" onclick="startWizard()">
-                    <i class="fas fa-plus"></i>
-                    Create New Trip
-                </button>
-            </div>
-            <div class="trips-grid" id="tripsGrid">
-                <!-- Trips will be populated by JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Trip Builder (Kanban) Section -->
-    <section id="trip-builder" class="trip-builder-section hidden">
-        <div class="container">
-            <div class="trip-builder-header">
-                <div class="trip-info">
-                    <h2 id="tripTitle">Trip to Paris</h2>
-                    <p id="tripDetails">7 days • 2 adults • Mar 15, 2024</p>
-                </div>
-                <div class="trip-actions">
-                    <button class="action-btn" onclick="saveTrip()">
-                        <i class="fas fa-save"></i>
-                        Save
+    <!-- Landing Page -->
+    <main id="landing-page">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>What's your pick for your next vacation?</h1>
+                <p>AI-powered travel planning that creates perfect itineraries tailored just for you</p>
+                
+                <div class="hero-search">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Pick your destination" id="hero-search" onkeyup="searchDestinations(event)">
+                    <button class="btn-primary" onclick="startWizard()">
+                        Plan My Trip
+                        <i data-lucide="arrow-right"></i>
                     </button>
-                    <button class="action-btn" onclick="shareTrip()">
-                        <i class="fas fa-share"></i>
-                        Share
-                    </button>
-                    <button class="action-btn" onclick="backToDashboard()">
-                        <i class="fas fa-arrow-left"></i>
-                        Back
-                    </button>
-                </div>
-            </div>
-            
-            <div class="kanban-board" id="kanbanBoard">
-                <!-- Kanban columns will be generated by JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Loading Modal -->
-    <div id="loadingModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
-            </div>
-            <h3>Creating Your Perfect Itinerary</h3>
-            <p>Our AI is analyzing your preferences and crafting a personalized travel plan...</p>
-            <div class="loading-steps">
-                <div class="step active">
-                    <i class="fas fa-search"></i>
-                    <span>Analyzing destination</span>
-                </div>
-                <div class="step">
-                    <i class="fas fa-map"></i>
-                    <span>Planning routes</span>
-                </div>
-                <div class="step">
-                    <i class="fas fa-star"></i>
-                    <span>Finding attractions</span>
-                </div>
-                <div class="step">
-                    <i class="fas fa-check"></i>
-                    <span>Finalizing itinerary</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="authModal" class="modal hidden">
-        <div class="modal-content auth-modal">
-            <div class="auth-header">
-                <h3 id="authTitle">Welcome to TravelAI</h3>
-                <p id="authSubtitle">Sign in to save and manage your trips</p>
-                <button class="modal-close" onclick="closeAuthModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="signin" onclick="switchAuthTab('signin')">
-                    Sign In
-                </button>
-                <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">
-                    Sign Up
-                </button>
-            </div>
-
-            <form id="authForm" class="auth-form">
-                <div class="form-group">
-                    <label for="authEmail">Email</label>
-                    <input type="email" id="authEmail" required placeholder="Enter your email">
+                    
+                    <div class="search-dropdown" id="search-dropdown">
+                        <div class="search-item" onclick="selectDestination('Bali')">
+                            <div class="search-item-info">
+                                <div class="search-item-name">Bali</div>
+                            </div>
+                            <span class="search-item-tag">TRENDING</span>
+                        </div>
+                        <div class="search-item" onclick="selectDestination('Maldives')">
+                            <div class="search-item-info">
+                                <div class="search-item-name">Maldives</div>
+                            </div>
+                            <span class="search-item-tag">ROMANTIC</span>
+                        </div>
+                        <div class="search-item" onclick="selectDestination('Europe')">
+                            <div class="search-item-info">
+                                <div class="search-item-name">Europe</div>
+                            </div>
+                            <span class="search-item-tag">POPULAR</span>
+                        </div>
+                        <div class="search-item" onclick="selectDestination('Thailand')">
+                            <div class="search-item-info">
+                                <div class="search-item-name">Thailand</div>
+                            </div>
+                            <span class="search-item-tag">BUDGET</span>
+                        </div>
+                        <div class="search-item" onclick="selectDestination('Singapore')">
+                            <div class="search-item-info">
+                                <div class="search-item-name">Singapore</div>
+                            </div>
+                            <span class="search-item-tag">URBAN</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="authPassword">Password</label>
-                    <input type="password" id="authPassword" required placeholder="Enter your password">
+                <div class="hero-cta">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.9);">
+                        <i data-lucide="check"></i>
+                        <span>AI-powered suggestions</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.9);">
+                        <i data-lucide="check"></i>
+                        <span>Real-time travel insights</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.9);">
+                        <i data-lucide="check"></i>
+                        <span>Collaborative planning</span>
+                    </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="form-group signup-only hidden">
-                    <label for="authPasswordConfirm">Confirm Password</label>
-                    <input type="password" id="authPasswordConfirm" placeholder="Confirm your password">
+        <!-- Genre Picker -->
+        <section class="genre-section">
+            <div class="container">
+                <h2>What's Your Travel Style?</h2>
+                <div class="genre-chips">
+                    <div class="chip-genre" data-genre="romance">
+                        <i data-lucide="heart"></i>
+                        Romance
+                    </div>
+                    <div class="chip-genre" data-genre="beach">
+                        <i data-lucide="waves"></i>
+                        Beach
+                    </div>
+                    <div class="chip-genre" data-genre="adventure">
+                        <i data-lucide="mountain"></i>
+                        Adventure
+                    </div>
+                    <div class="chip-genre" data-genre="culture">
+                        <i data-lucide="camera"></i>
+                        Culture
+                    </div>
+                    <div class="chip-genre" data-genre="food">
+                        <i data-lucide="utensils"></i>
+                        Food
+                    </div>
+                    <div class="chip-genre" data-genre="relax">
+                        <i data-lucide="leaf"></i>
+                        Relax
+                    </div>
+                    <div class="chip-genre" data-genre="nightlife">
+                        <i data-lucide="music"></i>
+                        Nightlife
+                    </div>
+                    <div class="chip-genre" data-genre="family">
+                        <i data-lucide="users"></i>
+                        Family
+                    </div>
                 </div>
+            </div>
+        </section>
+    </main>
 
-                <button type="submit" class="auth-submit-btn" id="authSubmitBtn">
-                    <span id="authSubmitText">Sign In</span>
-                    <div class="auth-spinner hidden"></div>
-                </button>
-
-                <div class="auth-error hidden" id="authError"></div>
-                <div class="auth-success hidden" id="authSuccess"></div>
-            </form>
-
-            <div class="auth-footer">
-                <p class="signin-only">
-                    Don't have an account? 
-                    <a href="#" onclick="switchAuthTab('signup')">Sign up here</a>
-                </p>
-                <p class="signup-only hidden">
-                    Already have an account? 
-                    <a href="#" onclick="switchAuthTab('signin')">Sign in here</a>
-                </p>
+    <!-- Wizard Modal -->
+    <div id="wizard-modal" class="wizard-modal">
+        <div class="wizard-content">
+            <div class="wizard-header">
+                <h2>Plan Your Perfect Trip</h2>
+                <div class="wizard-progress-steps">
+                    <div class="progress-step active"></div>
+                    <div class="progress-step"></div>
+                    <div class="progress-step"></div>
+                    <div class="progress-step"></div>
+                    <div class="progress-step"></div>
+                    <div class="progress-step"></div>
+                    <div class="progress-step"></div>
+                </div>
+                <p>Step <span id="wizard-step-number">1</span> of 7</p>
             </div>
             
-            <div class="demo-notice">
-                <small>
-                    <i class="fas fa-info-circle"></i>
-                    <strong>Demo Mode:</strong> Use any valid email and password (6+ characters)
-                </small>
+            <!-- Step 1: Where to? -->
+            <div class="wizard-step active" id="step-1">
+                <h3>Pick your destination</h3>
+                <p>Choose your dream destination from our curated list</p>
+                
+                <div class="search-input-container">
+                    <input type="text" class="search-input" placeholder="Search destination" id="destination-search" onkeyup="searchDestinationsWizard(event)">
+                    <div class="search-suggestions" id="destination-suggestions">
+                        <div class="suggestion-item" onclick="selectWizardDestination('Bali', 'Indonesia')">
+                            <span>Bali</span>
+                            <span class="suggestion-tag tag-trending">TRENDING</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Maldives', 'Maldives')">
+                            <span>Maldives</span>
+                            <span class="suggestion-tag tag-budget">ROMANTIC</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Europe', 'Europe')">
+                            <span>Europe</span>
+                            <span class="suggestion-tag tag-popular">POPULAR</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Thailand', 'Thailand')">
+                            <span>Thailand</span>
+                            <span class="suggestion-tag tag-budget">BUDGET</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Singapore', 'Singapore')">
+                            <span>Singapore</span>
+                            <span class="suggestion-tag tag-affordable">URBAN</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Japan', 'Japan')">
+                            <span>Japan</span>
+                            <span class="suggestion-tag tag-popular">CULTURE</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectWizardDestination('Australia', 'Australia')">
+                            <span>Australia</span>
+                            <span class="suggestion-tag tag-affordable">ADVENTURE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: When are you traveling? -->
+            <div class="wizard-step" id="step-2">
+                <h3>When are you traveling?</h3>
+                <p>Choose the perfect time for your adventure</p>
+                
+                <div class="time-analysis">
+                    <i data-lucide="info" class="analysis-icon"></i>
+                    Keep in mind that your visa will take around 20 working days to process
+                </div>
+                
+                <div class="month-grid" id="month-grid">
+                    <!-- Months will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Step 3: Choose departure date -->
+            <div class="wizard-step" id="step-3">
+                <h3>Choose departure date</h3>
+                <p>Select your exact travel dates</p>
+                
+                <div class="calendar-widget">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button onclick="previousMonth()">&lt;</button>
+                            <span id="calendar-month-year">August 2025</span>
+                            <button onclick="nextMonth()">&gt;</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Choose Departure City -->
+            <div class="wizard-step" id="step-4">
+                <h3>Choose Departure City</h3>
+                <p><strong>Note:</strong> This selection is for routing purposes only. Flight tickets won't be added to the itinerary yet.</p>
+                
+                <div class="search-input-container">
+                    <input type="text" class="search-input" placeholder="Search city" id="departure-search" onkeyup="searchDepartureCities(event)">
+                    <div class="search-suggestions show" id="departure-suggestions">
+                        <div class="suggestion-item" onclick="selectDepartureCity('Bengaluru')">
+                            <span>Bengaluru</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectDepartureCity('Chennai')">
+                            <span>Chennai</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectDepartureCity('New Delhi')">
+                            <span>New Delhi</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectDepartureCity('Mumbai')">
+                            <span>Mumbai</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectDepartureCity('Hyderabad')">
+                            <span>Hyderabad</span>
+                        </div>
+                        <div class="suggestion-item" onclick="selectDepartureCity('Trivandrum')">
+                            <span>Trivandrum</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: var(--grey-50); border-radius: var(--radius); display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="flight-booked">
+                    <label for="flight-booked">I have already booked my flights</label>
+                </div>
+            </div>
+            
+            <!-- Step 5: Duration -->
+            <div class="wizard-step" id="step-5">
+                <h3>What's the duration of your holiday?</h3>
+                <p>Choose the perfect length for your adventure</p>
+                
+                <div class="duration-options">
+                    <div class="duration-card" onclick="selectDuration('6-9')">
+                        <div class="duration-icon">📅</div>
+                        <div class="duration-text">6-9 days</div>
+                        <div class="duration-label">POPULAR</div>
+                    </div>
+                    <div class="duration-card" onclick="selectDuration('10-12')">
+                        <div class="duration-icon">🗓️</div>
+                        <div class="duration-text">10-12 days</div>
+                    </div>
+                    <div class="duration-card" onclick="selectDuration('13-15')">
+                        <div class="duration-icon">📆</div>
+                        <div class="duration-text">13-15 days</div>
+                    </div>
+                    <div class="duration-card" onclick="selectDuration('15-20')">
+                        <div class="duration-icon">🗒️</div>
+                        <div class="duration-text">15-20 days</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 6: Who is traveling? -->
+            <div class="wizard-step" id="step-6">
+                <h3>Who is traveling with you?</h3>
+                <p>Help us personalize your experience</p>
+                
+                <div class="traveler-options">
+                    <div class="traveler-card" onclick="selectTravelerType('couple')">
+                        <div class="traveler-icon">💕</div>
+                        <div class="traveler-text">Couple</div>
+                    </div>
+                    <div class="traveler-card" onclick="selectTravelerType('family')">
+                        <div class="traveler-icon">👨‍👩‍👧‍👦</div>
+                        <div class="traveler-text">Family</div>
+                    </div>
+                    <div class="traveler-card" onclick="selectTravelerType('friends')">
+                        <div class="traveler-icon">👥</div>
+                        <div class="traveler-text">Friends</div>
+                    </div>
+                    <div class="traveler-card" onclick="selectTravelerType('solo')">
+                        <div class="traveler-icon">🧳</div>
+                        <div class="traveler-text">Solo</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 7: Choose cities -->
+            <div class="wizard-step" id="step-7">
+                <h3>Choose cities</h3>
+                <p>Select the cities you'd like to explore</p>
+                
+                <div class="search-input-container">
+                    <input type="text" class="search-input" placeholder="Find city" id="city-search" onkeyup="searchCities(event)">
+                </div>
+                
+                <div class="cities-grid" id="cities-grid">
+                    <!-- Cities will be populated based on selected destination -->
+                </div>
+            </div>
+            
+            <!-- Loading Screen -->
+            <div class="loading-screen" id="loading-screen">
+                <div class="loading-animation">
+                    <div class="loading-circle"></div>
+                    <div class="loading-plane">✈️</div>
+                </div>
+                <div class="loading-text">Hang tight! We're fetching the best prices for you</div>
+                <div class="loading-subtext">AI is crafting your perfect itinerary with highly-rated destinations...</div>
+            </div>
+            
+            <!-- Itinerary Result -->
+            <div class="itinerary-result" id="itinerary-result">
+                <div class="result-header">
+                    <div class="result-image">🏝️</div>
+                    <div class="result-title" id="result-title">11 nights Hamilton Island, Sydney, Gold Coast, Canberra and Apollo Bay</div>
+                    <div class="result-subtitle" id="result-subtitle">✈️ DEL 27 Aug, 2 pax 6 | room Change</div>
+                    <div class="result-subtitle">⚡ 11 nights - Hamilton Island +4 cities Change</div>
+                </div>
+                
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-text">1,00,000+ happy travellers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-text">Rated 4.5+ on Google</div>
+                    </div>
+                </div>
+                
+                <div class="day-plan">
+                    <div class="day-header">
+                        <div class="day-title">Thu, 28 Aug - Hamilton Island</div>
+                        <button class="add-activity-btn">
+                            <i data-lucide="plus"></i>
+                            Add Activity
+                        </button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="background: #E8F5E8; padding: 1rem; border-radius: var(--radius);">
+                            <div style="font-size: 0.875rem; color: var(--success); font-weight: 600; margin-bottom: 0.5rem;">MORNING</div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span>✈️</span>
+                                <span style="font-weight: 500;">Departure To Hamilton Island by flight</span>
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--grey-600);">Arrive in Hamilton Island airport, Get transferred to yo...</div>
+                        </div>
+                        
+                        <div style="background: #FFF8DC; padding: 1rem; border-radius: var(--radius);">
+                            <div style="font-size: 0.875rem; color: #F59E0B; font-weight: 600; margin-bottom: 0.5rem;">EVENING</div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span>🏨</span>
+                                <span style="font-weight: 500;">At leisure. Check-in</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wizard-footer">
+                <button class="btn-secondary" id="wizard-back" onclick="previousWizardStep()" style="flex: 1;">
+                    <i data-lucide="arrow-left"></i>
+                    Back
+                </button>
+                <button class="btn-primary" id="wizard-next" onclick="nextWizardStep()" style="flex: 2;">
+                    Next
+                    <i data-lucide="arrow-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Confetti Canvas -->
-    <canvas id="confetti" class="confetti-canvas"></canvas>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
 
-    <!-- Scripts -->
-    <script type="module" src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/wizard.js"></script>
-    <script src="js/kanban.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/main.js"></script>
+        // Global state
+        let currentWizardStep = 1;
+        let wizardData = {
+            destination: '',
+            country: '',
+            month: '',
+            departureDate: '',
+            departureCity: '',
+            duration: '',
+            travelerType: '',
+            cities: []
+        };
+
+        // Mock data for different destinations
+        const destinationData = {
+            'Australia': {
+                cities: [
+                    { name: 'Sydney', description: 'More than just a pretty city', tag: 'PRICEY', image: '🏙️' },
+                    { name: 'Melbourne', description: 'An uber-cool coastal city', tag: 'AFFORDABLE', image: '🏛️' },
+                    { name: 'Hamilton Island', description: 'A paradise of resorts', tag: 'AFFORDABLE', image: '🏝️' },
+                    { name: 'Cairns', description: 'Where the reef meets the jungle', tag: 'AFFORDABLE', image: '🌿' },
+                    { name: 'Gold Coast', description: 'Surf, sand and surf', tag: 'AFFORDABLE', image: '🏄‍♂️' }
+                ],
+                months: [
+                    { name: 'Jul', season: 'OFF SEASON', temp: '8°|18°', class: 'off-season' },
+                    { name: 'Aug', season: 'OFF SEASON', temp: '9°|19°', class: 'off-season' },
+                    { name: 'Sep', season: 'GOOD TIME', temp: '11°|22°', class: 'best-time' },
+                    { name: 'Oct', season: 'CROWDED', temp: '13°|25°', class: 'crowded' },
+                    { name: 'Nov', season: 'OFF SEASON', temp: '15°|27°', class: 'off-season' },
+                    { name: 'Dec', season: 'SECOND BEST', temp: '17°|29°', class: 'good' },
+                    { name: 'Jan', season: 'TOO CROWDED', temp: '19°|29°', class: 'crowded' },
+                    { name: 'Feb', season: 'GOOD TIME', temp: '19°|29°', class: 'best-time' },
+                    { name: 'Mar', season: 'SECOND BEST', temp: '18°|27°', class: 'good' }
+                ]
+            },
+            'Bali': {
+                cities: [
+                    { name: 'Ubud', description: 'Cultural heart of Bali', tag: 'AFFORDABLE', image: '🌾' },
+                    { name: 'Seminyak', description: 'Beach clubs and luxury', tag: 'PRICEY', image: '🏖️' },
+                    { name: 'Canggu', description: 'Surf and digital nomads', tag: 'AFFORDABLE', image: '🏄‍♂️' },
+                    { name: 'Sanur', description: 'Peaceful beach town', tag: 'AFFORDABLE', image: '🌅' }
+                ],
+                months: [
+                    { name: 'Jul', season: 'BEST TIME', temp: '24°|29°', class: 'best-time' },
+                    { name: 'Aug', season: 'BEST TIME', temp: '24°|29°', class: 'best-time' },
+                    { name: 'Sep', season: 'GOOD TIME', temp: '25°|30°', class: 'good' }
+                ]
+            }
+        };
+
+        // Navigation functions
+        function showLanding() {
+            document.getElementById('landing-page').style.display = 'block';
+        }
+
+        function showAuth() {
+            alert('Authentication system would be integrated with Supabase Auth here');
+        }
+
+        // Search functions
+        function searchDestinations(event) {
+            const query = event.target.value.toLowerCase();
+            const dropdown = document.getElementById('search-dropdown');
+            
+            if (query.length > 0) {
+                dropdown.classList.add('show');
+            } else {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        function selectDestination(destination) {
+            document.getElementById('hero-search').value = destination;
+            document.getElementById('search-dropdown').classList.remove('show');
+            setTimeout(() => startWizard(), 500);
+        }
+
+        function searchDestinationsWizard(event) {
+            const query = event.target.value.toLowerCase();
+            const suggestions = document.getElementById('destination-suggestions');
+            
+            if (query.length > 0) {
+                suggestions.classList.add('show');
+            } else {
+                suggestions.classList.remove('show');
+            }
+        }
+
+        function selectWizardDestination(destination, country) {
+            wizardData.destination = destination;
+            wizardData.country = country;
+            document.getElementById('destination-search').value = destination;
+            document.getElementById('destination-suggestions').classList.remove('show');
+            
+            // Populate months based on destination
+            populateMonths(country);
+            populateCities(country);
+        }
+
+        function searchDepartureCities(event) {
+            // City search is already visible, no need to toggle
+        }
+
+        function selectDepartureCity(city) {
+            wizardData.departureCity = city;
+            document.getElementById('departure-search').value = city;
+            document.getElementById('departure-suggestions').classList.remove('show');
+        }
+
+        function searchCities(event) {
+            // Filter cities based on search
+            const query = event.target.value.toLowerCase();
+            const cityItems = document.querySelectorAll('.city-item');
+            
+            cityItems.forEach(item => {
+                const cityName = item.querySelector('.city-name').textContent.toLowerCase();
+                if (cityName.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Month population
+        function populateMonths(country) {
+            const monthGrid = document.getElementById('month-grid');
+            const months = destinationData[country]?.months || [];
+            
+            monthGrid.innerHTML = months.map(month => `
+                <div class="month-card ${month.class}" onclick="selectMonth('${month.name}')">
+                    <div class="month-name">${month.name}</div>
+                    <div class="month-season season-${month.class}">${month.season}</div>
+                    <div class="month-temp">${month.temp}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectMonth(month) {
+            wizardData.month = month;
+            document.querySelectorAll('.month-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.month-card').classList.add('active');
+        }
+
+        // Cities population
+        function populateCities(country) {
+            const citiesGrid = document.getElementById('cities-grid');
+            const cities = destinationData[country]?.cities || [];
+            
+            citiesGrid.innerHTML = cities.map(city => `
+                <div class="city-item" onclick="toggleCity('${city.name}')">
+                    <div class="city-image">${city.image}</div>
+                    <div class="city-info">
+                        <div class="city-name">${city.name}</div>
+                        <div class="city-description">${city.description}</div>
+                    </div>
+                    <div class="city-tag tag-${city.tag.toLowerCase()}">${city.tag}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCity(cityName) {
+            const cityElement = event.target.closest('.city-item');
+            cityElement.classList.toggle('active');
+            
+            if (cityElement.classList.contains('active')) {
+                if (!wizardData.cities.includes(cityName)) {
+                    wizardData.cities.push(cityName);
+                }
+            } else {
+                wizardData.cities = wizardData.cities.filter(city => city !== cityName);
+            }
+        }
+
+        // Duration selection
+        function selectDuration(duration) {
+            wizardData.duration = duration;
+            document.querySelectorAll('.duration-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.duration-card').classList.add('active');
+        }
+
+        // Traveler type selection
+        function selectTravelerType(type) {
+            wizardData.travelerType = type;
+            document.querySelectorAll('.traveler-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.traveler-card').classList.add('active');
+        }
+
+        // Wizard functions
+        function startWizard() {
+            resetWizard();
+            document.getElementById('wizard-modal').classList.add('active');
+        }
+
+        function closeWizard() {
+            document.getElementById('wizard-modal').classList.remove('active');
+        }
+
+        function resetWizard() {
+            currentWizardStep = 1;
+            wizardData = {
+                destination: '',
+                country: '',
+                month: '',
+                departureDate: '',
+                departureCity: '',
+                duration: '',
+                travelerType: '',
+                cities: []
+            };
+            
+            showWizardStep(1);
+            updateProgressSteps();
+        }
+
+        function nextWizardStep() {
+            if (!validateCurrentStep()) {
+                return;
+            }
+            
+            if (currentWizardStep < 7) {
+                currentWizardStep++;
+                showWizardStep(currentWizardStep);
+            } else {
+                generateItinerary();
+            }
+            
+            updateProgressSteps();
+        }
+
+        function previousWizardStep() {
+            if (currentWizardStep > 1) {
+                currentWizardStep--;
+                showWizardStep(currentWizardStep);
+                updateProgressSteps();
+            }
+        }
+
+        function showWizardStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('loading-screen').classList.remove('active');
+            document.getElementById('itinerary-result').classList.remove('active');
+            
+            // Show current step
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+            
+            // Update step number
+            document.getElementById('wizard-step-number').textContent = stepNumber;
+            
+            // Update button text
+            const nextBtn = document.getElementById('wizard-next');
+            const backBtn = document.getElementById('wizard-back');
+            
+            backBtn.disabled = stepNumber === 1;
+            
+            if (stepNumber === 7) {
+                nextBtn.innerHTML = '<i data-lucide="sparkles"></i> Generate Itinerary';
+            } else {
+                nextBtn.innerHTML = 'Next <i data-lucide="arrow-right"></i>';
+            }
+            
+            lucide.createIcons();
+        }
+
+        function updateProgressSteps() {
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((step, index) => {
+                if (index < currentWizardStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        function validateCurrentStep() {
+            switch (currentWizardStep) {
+                case 1: return wizardData.destination !== '';
+                case 2: return wizardData.month !== '';
+                case 3: return wizardData.departureDate !== '';
+                case 4: return wizardData.departureCity !== '';
+                case 5: return wizardData.duration !== '';
+                case 6: return wizardData.travelerType !== '';
+                case 7: return wizardData.cities.length > 0;
+                default: return true;
+            }
+        }
+
+        async function generateItinerary() {
+            // Hide wizard steps and show loading
+            document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('loading-screen').classList.add('active');
+            
+            // Hide wizard footer during loading
+            document.querySelector('.wizard-footer').style.display = 'none';
+            
+            try {
+                // Simulate AI processing time
+                await new Promise(resolve => setTimeout(resolve, 4000));
+                
+                // Update result with user data
+                document.getElementById('result-title').textContent = 
+                    `${wizardData.duration} days in ${wizardData.destination} - ${wizardData.cities.join(', ')}`;
+                document.getElementById('result-subtitle').textContent = 
+                    `✈️ ${wizardData.departureCity} ${wizardData.month}, ${wizardData.travelerType} trip`;
+                
+                // Hide loading and show result
+                document.getElementById('loading-screen').classList.remove('active');
+                document.getElementById('itinerary-result').classList.add('active');
+                
+                // Update footer for result screen
+                const footer = document.querySelector('.wizard-footer');
+                footer.style.display = 'flex';
+                footer.innerHTML = `
+                    <button class="btn-secondary" onclick="editItinerary()" style="flex: 1;">
+                        <i data-lucide="edit"></i>
+                        Edit Itinerary
+                    </button>
+                    <button class="btn-primary" onclick="saveItinerary()" style="flex: 2;">
+                        <i data-lucide="bookmark"></i>
+                        Save & Continue Planning
+                    </button>
+                `;
+                
+                lucide.createIcons();
+                
+            } catch (error) {
+                console.error('Error generating itinerary:', error);
+                alert('Error generating itinerary. Please try again.');
+                previousWizardStep();
+                document.querySelector('.wizard-footer').style.display = 'flex';
+            }
+        }
+
+        function editItinerary() {
+            // Go back to city selection to make changes
+            currentWizardStep = 7;
+            showWizardStep(7);
+            
+            // Restore original footer
+            const footer = document.querySelector('.wizard-footer');
+            footer.innerHTML = `
+                <button class="btn-secondary" id="wizard-back" onclick="previousWizardStep()" style="flex: 1;">
+                    <i data-lucide="arrow-left"></i>
+                    Back
+                </button>
+                <button class="btn-primary" id="wizard-next" onclick="nextWizardStep()" style="flex: 2;">
+                    <i data-lucide="sparkles"></i>
+                    Generate Itinerary
+                </button>
+            `;
+            
+            updateProgressSteps();
+            lucide.createIcons();
+        }
+
+        function saveItinerary() {
+            closeWizard();
+            alert('🎉 Itinerary saved! You can now collaborate with others and add more activities.');
+        }
+
+        // Calendar functions (simplified)
+        function previousMonth() {
+            // Calendar navigation logic
+            console.log('Previous month');
+        }
+
+        function nextMonth() {
+            // Calendar navigation logic
+            console.log('Next month');
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Close search dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.hero-search')) {
+                    document.getElementById('search-dropdown').classList.remove('show');
+                }
+                if (!event.target.closest('.search-input-container')) {
+                    document.querySelectorAll('.search-suggestions').forEach(s => s.classList.remove('show'));
+                }
+            });
+        });
+    </script>
 </body>
 </html>
