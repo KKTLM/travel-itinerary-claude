@@ -1,608 +1,623 @@
-// Wizard functionality
-class TravelWizard {
-    constructor() {
-        this.currentStep = 1;
-        this.totalSteps = 7;
-        this.wizardForm = {
-            destCountry: '',
-            departureCity: '',
-            startDate: '',
-            duration: 7,
-            travellers: { adults: 1, kids: 0 },
-            cities: [],
-            interestTags: []
-        };
-        this.suggestedCities = [];
-        this.init();
-    }
+// Wizard state
+let currentStep = 1;
+const totalSteps = 7;
+let wizardData = {};
 
-    init() {
-        this.setupProgressDots();
-        this.setupAutocomplete();
-        this.setupDurationControls();
-        this.setupInterestChips();
-        this.setupDateInput();
-        this.updateProgress();
-    }
+// Make functions globally accessible
+window.startWizard = startWizard;
+window.nextStep = nextStep;
+window.previousStep = previousStep;
+window.skipWizard = skipWizard;
+window.updateCounter = updateCounter;
 
-    setupProgressDots() {
-        const dotsContainer = document.getElementById('progressDots');
-        dotsContainer.innerHTML = '';
-        
-        for (let i = 1; i <= this.totalSteps; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'progress-dot';
-            if (i === 1) dot.classList.add('active');
-            dotsContainer.appendChild(dot);
-        }
-    }
-
-    setupAutocomplete() {
-        // Country autocomplete
-        const countryInput = document.getElementById('destCountry');
-        const countrySuggestions = document.getElementById('countrySuggestions');
-        
-        const countries = [
-            'France', 'Italy', 'Spain', 'Germany', 'United Kingdom', 'Greece', 'Portugal',
-            'Japan', 'Thailand', 'Indonesia', 'Vietnam', 'South Korea', 'China', 'India',
-            'United States', 'Canada', 'Mexico', 'Brazil', 'Argentina', 'Peru',
-            'Australia', 'New Zealand', 'South Africa', 'Morocco', 'Egypt', 'Kenya'
-        ];
-
-        this.setupAutocompleteField(countryInput, countrySuggestions, countries, (value) => {
-            this.wizardForm.destCountry = value;
-        });
-
-        // City autocomplete
-        const cityInput = document.getElementById('departureCity');
-        const citySuggestions = document.getElementById('citySuggestions');
-        
-        const cities = [
-            'New York (JFK)', 'Los Angeles (LAX)', 'London (LHR)', 'Paris (CDG)',
-            'Tokyo (NRT)', 'Sydney (SYD)', 'Dubai (DXB)', 'Singapore (SIN)',
-            'Amsterdam (AMS)', 'Frankfurt (FRA)', 'Madrid (MAD)', 'Rome (FCO)',
-            'Barcelona (BCN)', 'Munich (MUC)', 'Zurich (ZUR)', 'Vienna (VIE)',
-            'Istanbul (IST)', 'Moscow (SVO)', 'Beijing (PEK)', 'Shanghai (PVG)',
-            'Hong Kong (HKG)', 'Bangkok (BKK)', 'Mumbai (BOM)', 'Delhi (DEL)'
-        ];
-
-        this.setupAutocompleteField(cityInput, citySuggestions, cities, (value) => {
-            this.wizardForm.departureCity = value;
-        });
-    }
-
-    setupAutocompleteField(input, suggestionsContainer, options, callback) {
-        input.addEventListener('input', (e) => {
-            const value = e.target.value.toLowerCase();
-            if (value.length < 2) {
-                suggestionsContainer.style.display = 'none';
-                return;
-            }
-
-            const filtered = options.filter(option => 
-                option.toLowerCase().includes(value)
-            ).slice(0, 5);
-
-            if (filtered.length > 0) {
-                suggestionsContainer.innerHTML = filtered.map(option => 
-                    `<div class="suggestion-item" data-value="${option}">${option}</div>`
-                ).join('');
-                suggestionsContainer.style.display = 'block';
-            } else {
-                suggestionsContainer.style.display = 'none';
-            }
-        });
-
-        suggestionsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('suggestion-item')) {
-                const value = e.target.dataset.value;
-                input.value = value;
-                callback(value);
-                suggestionsContainer.style.display = 'none';
-            }
-        });
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-                suggestionsContainer.style.display = 'none';
-            }
-        });
-    }
-
-    setupDurationControls() {
-        const slider = document.getElementById('durationSlider');
-        const numberInput = document.getElementById('durationNumber');
-
-        const updateDuration = (value) => {
-            this.wizardForm.duration = parseInt(value);
-            slider.value = value;
-            numberInput.value = value;
-        };
-
-        slider.addEventListener('input', (e) => {
-            updateDuration(e.target.value);
-        });
-
-        numberInput.addEventListener('input', (e) => {
-            const value = Math.max(2, Math.min(30, parseInt(e.target.value) || 2));
-            updateDuration(value);
-        });
-    }
-
-    setupInterestChips() {
-        const interestChips = document.querySelectorAll('.interest-chip');
-        
-        interestChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                const interest = chip.dataset.interest;
-                
-                if (chip.classList.contains('selected')) {
-                    chip.classList.remove('selected');
-                    this.wizardForm.interestTags = this.wizardForm.interestTags.filter(tag => tag !== interest);
-                } else {
-                    chip.classList.add('selected');
-                    this.wizardForm.interestTags.push(interest);
-                }
-            });
-        });
-    }
-
-    setupDateInput() {
-        const dateInput = document.getElementById('startDate');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.min = today;
-        
-        dateInput.addEventListener('change', (e) => {
-            this.wizardForm.startDate = e.target.value;
-        });
-    }
-
-    async loadCitySuggestions() {
-        if (!this.wizardForm.destCountry) return;
-
-        const loadingElement = document.getElementById('loadingCities');
-        const citiesGrid = document.getElementById('citiesGrid');
-        
-        loadingElement.style.display = 'flex';
-        citiesGrid.innerHTML = '';
-
-        try {
-            // Simulate API call to get city suggestions
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Mock city suggestions based on country
-            const cityMap = {
-                'France': ['Paris', 'Lyon', 'Marseille', 'Nice', 'Bordeaux', 'Strasbourg'],
-                'Italy': ['Rome', 'Milan', 'Venice', 'Florence', 'Naples', 'Turin'],
-                'Spain': ['Madrid', 'Barcelona', 'Seville', 'Valencia', 'Bilbao', 'Granada'],
-                'Japan': ['Tokyo', 'Kyoto', 'Osaka', 'Hiroshima', 'Nara', 'Yokohama'],
-                'Thailand': ['Bangkok', 'Chiang Mai', 'Phuket', 'Pattaya', 'Krabi', 'Ayutthaya'],
-                'United States': ['New York', 'Los Angeles', 'Chicago', 'Miami', 'San Francisco', 'Las Vegas']
-            };
-
-            this.suggestedCities = cityMap[this.wizardForm.destCountry] || 
-                ['Capital City', 'Historic Town', 'Coastal City', 'Mountain Resort', 'Cultural Center'];
-
-            loadingElement.style.display = 'none';
-            this.renderCityChips();
-            
-        } catch (error) {
-            console.error('Error loading city suggestions:', error);
-            loadingElement.style.display = 'none';
-            this.suggestedCities = ['Capital City', 'Historic Town', 'Coastal City'];
-            this.renderCityChips();
-        }
-    }
-
-    renderCityChips() {
-        const citiesGrid = document.getElementById('citiesGrid');
-        
-        citiesGrid.innerHTML = this.suggestedCities.map(city => 
-            `<div class="city-chip" data-city="${city}">${city}</div>`
-        ).join('');
-
-        // Add click handlers
-        citiesGrid.querySelectorAll('.city-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const city = chip.dataset.city;
-                
-                if (chip.classList.contains('selected')) {
-                    chip.classList.remove('selected');
-                    this.wizardForm.cities = this.wizardForm.cities.filter(c => c !== city);
-                } else {
-                    chip.classList.add('selected');
-                    this.wizardForm.cities.push(city);
-                }
-            });
-        });
-    }
-
-    validateStep() {
-        switch (this.currentStep) {
-            case 1:
-                return this.wizardForm.destCountry.length > 0;
-            case 2:
-                return this.wizardForm.departureCity.length > 0;
-            case 3:
-                return this.wizardForm.startDate.length > 0;
-            case 4:
-                return this.wizardForm.duration >= 2 && this.wizardForm.duration <= 30;
-            case 5:
-                return this.wizardForm.travellers.adults >= 1;
-            case 6:
-                return this.wizardForm.cities.length >= 1;
-            case 7:
-                return true; // Interests are optional
-            default:
-                return false;
-        }
-    }
-
-    async nextStep() {
-        if (!this.validateStep()) {
-            this.showValidationError();
-            return;
-        }
-
-        if (this.currentStep < this.totalSteps) {
-            this.currentStep++;
-            
-            // Load city suggestions when reaching step 6
-            if (this.currentStep === 6) {
-                await this.loadCitySuggestions();
-            }
-            
-            this.updateStepDisplay();
-            this.updateProgress();
-        } else {
-            // Generate itinerary
-            await this.generateItinerary();
-        }
-    }
-
-    previousStep() {
-        if (this.currentStep > 1) {
-            this.currentStep--;
-            this.updateStepDisplay();
-            this.updateProgress();
-        }
-    }
-
-    updateStepDisplay() {
-        // Hide all steps
-        document.querySelectorAll('.wizard-step').forEach(step => {
-            step.classList.remove('active');
-        });
-
-        // Show current step with animation
-        const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-        }
-
-        // Update navigation buttons
-        const backBtn = document.getElementById('backBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        
-        backBtn.disabled = this.currentStep === 1;
-        
-        if (this.currentStep === this.totalSteps) {
-            nextBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Itinerary';
-            nextBtn.classList.add('generating');
-        } else {
-            nextBtn.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
-            nextBtn.classList.remove('generating');
-        }
-    }
-
-    updateProgress() {
-        const progressFill = document.getElementById('progressFill');
-        const currentStepSpan = document.getElementById('currentStep');
-        const dots = document.querySelectorAll('.progress-dot');
-        
-        const percentage = (this.currentStep / this.totalSteps) * 100;
-        progressFill.style.width = `${percentage}%`;
-        currentStepSpan.textContent = this.currentStep;
-        
-        // Update dots
-        dots.forEach((dot, index) => {
-            dot.classList.remove('active', 'completed');
-            if (index + 1 < this.currentStep) {
-                dot.classList.add('completed');
-            } else if (index + 1 === this.currentStep) {
-                dot.classList.add('active');
-            }
-        });
-    }
-
-    showValidationError() {
-        // Simple validation feedback
-        const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
-        currentStepElement.style.animation = 'shake 0.5s ease-in-out';
-        
-        setTimeout(() => {
-            currentStepElement.style.animation = '';
-        }, 500);
-    }
-
-    async generateItinerary() {
-        // Check authentication
-        if (!window.supabaseClient.isAuthenticated()) {
-            window.authManager.openAuthModal();
-            return;
-        }
-        
-        // Show loading modal
-        document.getElementById('loadingModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-
-        try {
-            // Simulate loading steps
-            await this.simulateLoadingSteps();
-            
-            // Generate itinerary using mock data (replace with actual API call)
-            const itinerary = await this.mockGenerateItinerary();
-            
-            // Save trip to storage
-            const trip = {
-                id: Date.now().toString(),
-                ...this.wizardForm,
-                itinerary: itinerary,
-                createdAt: new Date().toISOString()
-            };
-
-            await window.supabaseClient.saveTrip(trip);
-            
-            // Hide loading modal
-            document.getElementById('loadingModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            
-            // Show confetti
-            this.showConfetti();
-            
-            // Navigate to trip builder
-            setTimeout(() => {
-                window.tripBuilder.loadTrip(trip);
-                this.showSection('trip-builder');
-            }, 2000);
-            
-        } catch (error) {
-            console.error('Error generating itinerary:', error);
-            document.getElementById('loadingModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            
-            if (error.message.includes('authenticated')) {
-                window.authManager.openAuthModal();
-            } else {
-                alert('Failed to generate itinerary. Please try again.');
-            }
-        }
-    }
-
-    async simulateLoadingSteps() {
-        const steps = document.querySelectorAll('.loading-steps .step');
-        
-        for (let i = 0; i < steps.length; i++) {
-            if (i > 0) {
-                steps[i - 1].classList.remove('active');
-                steps[i - 1].classList.add('completed');
-            }
-            
-            steps[i].classList.add('active');
-            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-        }
-        
-        steps[steps.length - 1].classList.remove('active');
-        steps[steps.length - 1].classList.add('completed');
-    }
-
-    async mockGenerateItinerary() {
-        // Mock itinerary generation (replace with actual Gemini API call)
-        const days = [];
-        
-        for (let i = 0; i < this.wizardForm.duration; i++) {
-            const dayActivities = this.generateDayActivities(i + 1);
-            days.push({
-                day: i + 1,
-                city: this.wizardForm.cities[i % this.wizardForm.cities.length],
-                activities: dayActivities
-            });
-        }
-
-        return { days };
-    }
-
-    generateDayActivities(dayNumber) {
-        const activities = [];
-        const timeSlots = ['9:00 AM', '11:30 AM', '2:00 PM', '4:30 PM', '7:00 PM'];
-        
-        const activityTemplates = [
-            { title: 'City Walking Tour', description: 'Explore the historic city center', duration: '2 hours' },
-            { title: 'Local Museum Visit', description: 'Discover local art and culture', duration: '1.5 hours' },
-            { title: 'Traditional Restaurant', description: 'Authentic local cuisine experience', duration: '1 hour' },
-            { title: 'Scenic Viewpoint', description: 'Panoramic city views', duration: '45 minutes' },
-            { title: 'Local Market', description: 'Browse local crafts and foods', duration: '1 hour' }
-        ];
-
-        timeSlots.forEach((time, index) => {
-            const template = activityTemplates[index % activityTemplates.length];
-            activities.push({
-                id: `${dayNumber}-${index}`,
-                time: time,
-                title: template.title,
-                description: template.description,
-                duration: template.duration,
-                location: 'City Center',
-                status: 'planned'
-            });
-        });
-
-        return activities;
-    }
-
-    showConfetti() {
-        const canvas = document.getElementById('confetti');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const confettiPieces = [];
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'];
-        
-        // Create confetti pieces
-        for (let i = 0; i < 100; i++) {
-            confettiPieces.push({
-                x: Math.random() * canvas.width,
-                y: -10,
-                vx: (Math.random() - 0.5) * 4,
-                vy: Math.random() * 3 + 2,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                size: Math.random() * 8 + 4,
-                rotation: Math.random() * 360,
-                rotationSpeed: (Math.random() - 0.5) * 10
-            });
-        }
-        
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            confettiPieces.forEach((piece, index) => {
-                piece.x += piece.vx;
-                piece.y += piece.vy;
-                piece.rotation += piece.rotationSpeed;
-                
-                ctx.save();
-                ctx.translate(piece.x, piece.y);
-                ctx.rotate(piece.rotation * Math.PI / 180);
-                ctx.fillStyle = piece.color;
-                ctx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size);
-                ctx.restore();
-                
-                // Remove pieces that are off screen
-                if (piece.y > canvas.height + 10) {
-                    confettiPieces.splice(index, 1);
-                }
-            });
-            
-            if (confettiPieces.length > 0) {
-                requestAnimationFrame(animate);
-            }
-        }
-        
-        animate();
-    }
-
-    showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('section').forEach(section => {
-            section.classList.add('hidden');
-        });
-        
-        // Show target section
-        document.getElementById(sectionId).classList.remove('hidden');
-        
-        // Update navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        const targetLink = document.querySelector(`[href="#${sectionId}"]`);
-        if (targetLink) {
-            targetLink.classList.add('active');
-        }
-    }
-
-    reset() {
-        this.currentStep = 1;
-        this.wizardForm = {
-            destCountry: '',
-            departureCity: '',
-            startDate: '',
-            duration: 7,
-            travellers: { adults: 1, kids: 0 },
-            cities: [],
-            interestTags: []
-        };
-        
-        // Reset form elements
-        document.getElementById('destCountry').value = '';
-        document.getElementById('departureCity').value = '';
-        document.getElementById('startDate').value = '';
-        document.getElementById('durationSlider').value = 7;
-        document.getElementById('durationNumber').value = 7;
-        document.getElementById('adultsCount').textContent = '1';
-        document.getElementById('kidsCount').textContent = '0';
-        
-        // Reset selections
-        document.querySelectorAll('.city-chip.selected').forEach(chip => {
-            chip.classList.remove('selected');
-        });
-        
-        document.querySelectorAll('.interest-chip.selected').forEach(chip => {
-            chip.classList.remove('selected');
-        });
-        
-        this.updateStepDisplay();
-        this.updateProgress();
-    }
-}
-
-// Global functions
 function startWizard() {
-    if (!window.supabaseClient.isAuthenticated()) {
-        window.authManager.openAuthModal();
-        return;
-    }
-    window.travelWizard.reset();
-    window.travelWizard.showSection('wizard');
+    // Hide other sections
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('trip-builder').classList.add('hidden');
+    
+    // Show wizard section
+    document.getElementById('wizard').classList.remove('hidden');
+    
+    // Reset wizard state
+    currentStep = 1;
+    wizardData = {};
+    
+    // Initialize wizard
+    initializeWizard();
+    updateProgress();
+    showStep(currentStep);
 }
 
-function skipWizard() {
-    if (!window.supabaseClient.isAuthenticated()) {
-        window.authManager.openAuthModal();
-        return;
+function initializeWizard() {
+    // Initialize progress dots
+    const progressDots = document.getElementById('progressDots');
+    progressDots.innerHTML = '';
+    
+    for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (i === 1) dot.classList.add('active');
+        progressDots.appendChild(dot);
     }
-    // Navigate to manual trip builder
-    window.tripBuilder.createNewTrip();
-    window.travelWizard.showSection('trip-builder');
+    
+    // Set up autocomplete for countries
+    setupCountryAutocomplete();
+    
+    // Set up autocomplete for cities
+    setupCityAutocomplete();
+    
+    // Set up duration controls
+    setupDurationControls();
+    
+    // Set up interest chips
+    setupInterestChips();
+    
+    // Set minimum date to today
+    const startDateInput = document.getElementById('startDate');
+    if (startDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.min = today;
+    }
+}
+
+function setupCountryAutocomplete() {
+    const input = document.getElementById('destCountry');
+    const suggestions = document.getElementById('countrySuggestions');
+    
+    if (!input || !suggestions) return;
+    
+    const countries = [
+        'France', 'Italy', 'Spain', 'Germany', 'United Kingdom', 'Greece', 'Portugal',
+        'Japan', 'Thailand', 'Indonesia', 'Vietnam', 'South Korea', 'China', 'India',
+        'United States', 'Canada', 'Mexico', 'Brazil', 'Argentina', 'Peru',
+        'Australia', 'New Zealand', 'South Africa', 'Morocco', 'Egypt', 'Kenya'
+    ];
+    
+    input.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        suggestions.innerHTML = '';
+        
+        if (value.length > 0) {
+            const filtered = countries.filter(country => 
+                country.toLowerCase().includes(value)
+            );
+            
+            if (filtered.length > 0) {
+                suggestions.style.display = 'block';
+                filtered.slice(0, 5).forEach(country => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = country;
+                    item.addEventListener('click', function() {
+                        input.value = country;
+                        suggestions.style.display = 'none';
+                        wizardData.destCountry = country;
+                    });
+                    suggestions.appendChild(item);
+                });
+            } else {
+                suggestions.style.display = 'none';
+            }
+        } else {
+            suggestions.style.display = 'none';
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.style.display = 'none';
+        }
+    });
+}
+
+function setupCityAutocomplete() {
+    const input = document.getElementById('departureCity');
+    const suggestions = document.getElementById('citySuggestions');
+    
+    if (!input || !suggestions) return;
+    
+    const cities = [
+        'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia',
+        'London', 'Paris', 'Berlin', 'Madrid', 'Rome', 'Amsterdam',
+        'Tokyo', 'Seoul', 'Bangkok', 'Singapore', 'Hong Kong', 'Mumbai',
+        'Sydney', 'Melbourne', 'Toronto', 'Vancouver', 'Montreal'
+    ];
+    
+    input.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        suggestions.innerHTML = '';
+        
+        if (value.length > 0) {
+            const filtered = cities.filter(city => 
+                city.toLowerCase().includes(value)
+            );
+            
+            if (filtered.length > 0) {
+                suggestions.style.display = 'block';
+                filtered.slice(0, 5).forEach(city => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = city;
+                    item.addEventListener('click', function() {
+                        input.value = city;
+                        suggestions.style.display = 'none';
+                        wizardData.departureCity = city;
+                    });
+                    suggestions.appendChild(item);
+                });
+            } else {
+                suggestions.style.display = 'none';
+            }
+        } else {
+            suggestions.style.display = 'none';
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.style.display = 'none';
+        }
+    });
+}
+
+function setupDurationControls() {
+    const slider = document.getElementById('durationSlider');
+    const number = document.getElementById('durationNumber');
+    
+    if (!slider || !number) return;
+    
+    slider.addEventListener('input', function() {
+        number.value = this.value;
+        wizardData.duration = parseInt(this.value);
+    });
+    
+    number.addEventListener('input', function() {
+        slider.value = this.value;
+        wizardData.duration = parseInt(this.value);
+    });
+}
+
+function setupInterestChips() {
+    const chips = document.querySelectorAll('.interest-chip');
+    
+    chips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            
+            const interest = this.dataset.interest;
+            if (!wizardData.interestTags) {
+                wizardData.interestTags = [];
+            }
+            
+            if (this.classList.contains('selected')) {
+                if (!wizardData.interestTags.includes(interest)) {
+                    wizardData.interestTags.push(interest);
+                }
+            } else {
+                wizardData.interestTags = wizardData.interestTags.filter(tag => tag !== interest);
+            }
+        });
+    });
 }
 
 function nextStep() {
-    window.travelWizard.nextStep();
+    if (!validateCurrentStep()) {
+        return;
+    }
+    
+    if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+        updateProgress();
+        
+        // Load cities for step 6
+        if (currentStep === 6) {
+            loadCitySuggestions();
+        }
+    } else {
+        // Generate itinerary
+        generateItinerary();
+    }
 }
 
 function previousStep() {
-    window.travelWizard.previousStep();
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        updateProgress();
+    }
+}
+
+function skipWizard() {
+    // Navigate to manual trip creation
+    if (typeof showTripBuilder === 'function') {
+        showTripBuilder();
+    } else {
+        // Fallback to dashboard
+        showDashboard();
+    }
+}
+
+function validateCurrentStep() {
+    switch (currentStep) {
+        case 1:
+            const destCountry = document.getElementById('destCountry').value;
+            if (!destCountry) {
+                alert('Please select a destination country');
+                return false;
+            }
+            wizardData.destCountry = destCountry;
+            break;
+            
+        case 2:
+            const departureCity = document.getElementById('departureCity').value;
+            if (!departureCity) {
+                alert('Please enter your departure city');
+                return false;
+            }
+            wizardData.departureCity = departureCity;
+            break;
+            
+        case 3:
+            const startDate = document.getElementById('startDate').value;
+            if (!startDate) {
+                alert('Please select your departure date');
+                return false;
+            }
+            wizardData.startDate = startDate;
+            break;
+            
+        case 4:
+            const duration = document.getElementById('durationNumber').value;
+            if (!duration || duration < 2) {
+                alert('Please select a trip duration of at least 2 days');
+                return false;
+            }
+            wizardData.duration = parseInt(duration);
+            break;
+            
+        case 5:
+            const adults = parseInt(document.getElementById('adultsCount').textContent);
+            const kids = parseInt(document.getElementById('kidsCount').textContent);
+            wizardData.travellers = { adults, kids };
+            break;
+            
+        case 6:
+            const selectedCities = document.querySelectorAll('.city-chip.selected');
+            if (selectedCities.length === 0) {
+                alert('Please select at least one city to visit');
+                return false;
+            }
+            wizardData.cities = Array.from(selectedCities).map(chip => chip.textContent);
+            break;
+            
+        case 7:
+            // Interests are optional
+            break;
+    }
+    
+    return true;
+}
+
+function showStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.wizard-step').forEach(stepEl => {
+        stepEl.classList.remove('active');
+    });
+    
+    // Show current step
+    const currentStepEl = document.querySelector(`[data-step="${step}"]`);
+    if (currentStepEl) {
+        currentStepEl.classList.add('active');
+    }
+    
+    // Update navigation buttons
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    if (backBtn) {
+        backBtn.disabled = step === 1;
+    }
+    
+    if (nextBtn) {
+        if (step === totalSteps) {
+            nextBtn.innerHTML = '<span>Generate Itinerary</span><i class="fas fa-magic"></i>';
+            nextBtn.classList.add('generating');
+        } else {
+            nextBtn.innerHTML = 'Next<i class="fas fa-arrow-right"></i>';
+            nextBtn.classList.remove('generating');
+        }
+    }
+}
+
+function updateProgress() {
+    const progressFill = document.getElementById('progressFill');
+    const progressDots = document.querySelectorAll('.progress-dot');
+    const currentStepSpan = document.getElementById('currentStep');
+    
+    if (progressFill) {
+        const percentage = (currentStep / totalSteps) * 100;
+        progressFill.style.width = `${percentage}%`;
+    }
+    
+    if (currentStepSpan) {
+        currentStepSpan.textContent = currentStep;
+    }
+    
+    // Update dots
+    progressDots.forEach((dot, index) => {
+        dot.classList.remove('active', 'completed');
+        if (index + 1 < currentStep) {
+            dot.classList.add('completed');
+        } else if (index + 1 === currentStep) {
+            dot.classList.add('active');
+        }
+    });
 }
 
 function updateCounter(type, delta) {
     const countElement = document.getElementById(`${type}Count`);
+    if (!countElement) return;
+    
     let currentValue = parseInt(countElement.textContent);
+    let newValue = currentValue + delta;
     
-    if (type === 'adults') {
-        currentValue = Math.max(1, currentValue + delta);
-    } else {
-        currentValue = Math.max(0, currentValue + delta);
-    }
+    // Ensure minimum values
+    if (type === 'adults' && newValue < 1) newValue = 1;
+    if (type === 'kids' && newValue < 0) newValue = 0;
     
-    countElement.textContent = currentValue;
-    window.travelWizard.wizardForm.travellers[type] = currentValue;
+    countElement.textContent = newValue;
 }
 
-// Add shake animation to CSS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+async function loadCitySuggestions() {
+    const loadingEl = document.getElementById('loadingCities');
+    const gridEl = document.getElementById('citiesGrid');
+    
+    if (!loadingEl || !gridEl) return;
+    
+    loadingEl.style.display = 'flex';
+    gridEl.innerHTML = '';
+    
+    try {
+        // Call the suggest-cities edge function
+        const response = await fetch(`${supabaseUrl}/functions/v1/suggest-cities`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${supabaseAnonKey}`
+            },
+            body: JSON.stringify({
+                destCountry: wizardData.destCountry
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.cities) {
+            loadingEl.style.display = 'none';
+            
+            data.cities.forEach(city => {
+                const chip = document.createElement('div');
+                chip.className = 'city-chip';
+                chip.textContent = city;
+                chip.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+                gridEl.appendChild(chip);
+            });
+        } else {
+            throw new Error('Failed to load city suggestions');
+        }
+    } catch (error) {
+        console.error('Error loading cities:', error);
+        loadingEl.style.display = 'none';
+        
+        // Show fallback cities
+        const fallbackCities = ['Capital City', 'Historic Town', 'Coastal City', 'Mountain Resort'];
+        fallbackCities.forEach(city => {
+            const chip = document.createElement('div');
+            chip.className = 'city-chip';
+            chip.textContent = city;
+            chip.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+            gridEl.appendChild(chip);
+        });
     }
-`;
-document.head.appendChild(style);
+}
 
-// Initialize wizard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.travelWizard = new TravelWizard();
-});
+async function generateItinerary() {
+    // Show loading modal
+    const loadingModal = document.getElementById('loadingModal');
+    if (loadingModal) {
+        loadingModal.classList.remove('hidden');
+        animateLoadingSteps();
+    }
+    
+    try {
+        // Call the generate-itinerary edge function
+        const response = await fetch(`${supabaseUrl}/functions/v1/generate-itinerary`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${supabaseAnonKey}`
+            },
+            body: JSON.stringify(wizardData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.itinerary) {
+            // Save trip to database if user is authenticated
+            if (window.supabaseClient && window.currentUser) {
+                await saveTripToDatabase(data.itinerary);
+            } else {
+                // Save to local storage for non-authenticated users
+                localStorage.setItem('currentTrip', JSON.stringify({
+                    ...wizardData,
+                    itinerary: data.itinerary
+                }));
+            }
+            
+            // Hide loading modal
+            if (loadingModal) {
+                loadingModal.classList.add('hidden');
+            }
+            
+            // Show confetti
+            if (typeof triggerConfetti === 'function') {
+                triggerConfetti();
+            }
+            
+            // Navigate to trip builder
+            setTimeout(() => {
+                showTripBuilder(data.itinerary);
+            }, 1000);
+            
+        } else {
+            throw new Error('Failed to generate itinerary');
+        }
+    } catch (error) {
+        console.error('Error generating itinerary:', error);
+        
+        // Hide loading modal
+        if (loadingModal) {
+            loadingModal.classList.add('hidden');
+        }
+        
+        alert('Failed to generate itinerary. Please try again.');
+    }
+}
+
+async function saveTripToDatabase(itinerary) {
+    try {
+        // Create trip record
+        const { data: trip, error: tripError } = await window.supabaseClient
+            .from('trips')
+            .insert({
+                name: `Trip to ${wizardData.destCountry}`,
+                start_date: wizardData.startDate,
+                end_date: calculateEndDate(wizardData.startDate, wizardData.duration),
+                created_by: window.currentUser.id
+            })
+            .select()
+            .single();
+        
+        if (tripError) throw tripError;
+        
+        // Create trip days and items
+        for (const day of itinerary.days) {
+            // Create trip day
+            const { data: tripDay, error: dayError } = await window.supabaseClient
+                .from('trip_days')
+                .insert({
+                    trip_id: trip.id,
+                    date: calculateDayDate(wizardData.startDate, day.day - 1)
+                })
+                .select()
+                .single();
+            
+            if (dayError) throw dayError;
+            
+            // Create trip items for this day
+            for (let i = 0; i < day.activities.length; i++) {
+                const activity = day.activities[i];
+                await window.supabaseClient
+                    .from('trip_items')
+                    .insert({
+                        day_id: tripDay.id,
+                        title: activity.title,
+                        note: activity.description,
+                        order: i,
+                        type: 'activity'
+                    });
+            }
+        }
+        
+        // Store trip ID for navigation
+        wizardData.tripId = trip.id;
+        
+    } catch (error) {
+        console.error('Error saving trip to database:', error);
+        // Continue anyway - user can still see the itinerary
+    }
+}
+
+function calculateEndDate(startDate, duration) {
+    const start = new Date(startDate);
+    const end = new Date(start);
+    end.setDate(start.getDate() + duration - 1);
+    return end.toISOString().split('T')[0];
+}
+
+function calculateDayDate(startDate, dayOffset) {
+    const start = new Date(startDate);
+    const day = new Date(start);
+    day.setDate(start.getDate() + dayOffset);
+    return day.toISOString().split('T')[0];
+}
+
+function animateLoadingSteps() {
+    const steps = document.querySelectorAll('.loading-steps .step');
+    let currentStepIndex = 0;
+    
+    const interval = setInterval(() => {
+        if (currentStepIndex > 0) {
+            steps[currentStepIndex - 1].classList.remove('active');
+            steps[currentStepIndex - 1].classList.add('completed');
+        }
+        
+        if (currentStepIndex < steps.length) {
+            steps[currentStepIndex].classList.add('active');
+            currentStepIndex++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+function showTripBuilder(itinerary) {
+    // Hide wizard
+    document.getElementById('wizard').classList.add('hidden');
+    
+    // Show trip builder
+    document.getElementById('trip-builder').classList.remove('hidden');
+    
+    // Update trip info
+    const tripTitle = document.getElementById('tripTitle');
+    const tripDetails = document.getElementById('tripDetails');
+    
+    if (tripTitle) {
+        tripTitle.textContent = `Trip to ${wizardData.destCountry}`;
+    }
+    
+    if (tripDetails) {
+        const adults = wizardData.travellers.adults;
+        const kids = wizardData.travellers.kids;
+        const travellersText = `${adults} adult${adults > 1 ? 's' : ''}${kids > 0 ? `, ${kids} kid${kids > 1 ? 's' : ''}` : ''}`;
+        tripDetails.textContent = `${wizardData.duration} days • ${travellersText} • ${new Date(wizardData.startDate).toLocaleDateString()}`;
+    }
+    
+    // Load itinerary into kanban board
+    if (typeof loadItineraryIntoKanban === 'function') {
+        loadItineraryIntoKanban(itinerary);
+    }
+}
+
+function showDashboard() {
+    // Hide all sections
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('wizard').classList.add('hidden');
+    document.getElementById('trip-builder').classList.add('hidden');
+    
+    // Show dashboard
+    document.getElementById('dashboard').classList.remove('hidden');
+    
+    // Load trips if function exists
+    if (typeof loadUserTrips === 'function') {
+        loadUserTrips();
+    }
+}
